@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 436c5b310a933054da470c28b84bb2b8, type: 3}
+  m_Name: PlayerStats_Swordsman
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStatsData
+  maxLevel: 15
+  baseMaxHP: 50
+  hpPerLevel: 10
+  baseAttackPower: 10
+  attackPerLevel: 2
+  baseDefense: 0
+  defensePerLevel: 1
+  baseExpToLevel: 20
+  expGrowthRate: 1.15
+  moveSpeed: 4
+  jumpForce: 9
+  attackRange: 0.9
+  attackCooldown: 0.4
+  attackHitDelay: 0.15
+  invulnerabilityDuration: 0.8
