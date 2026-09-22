@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 718a4888415540140aab690e15bff646
+guid: 716ade2edac4e774ba9788d6365096a6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3500402813295532150
-    second: GroundTile_Trees_0
+      213: 5663474800008191224
+    second: trees_clean_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,8 +49,8 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 0
-  alignment: 2
-  spritePivot: {x: 0.5, y: 1}
+  alignment: 9
+  spritePivot: {x: 0.5746, y: 0.4623}
   spritePixelsToUnits: 140
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: GroundTile_Trees_0
+      name: trees_clean_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 200
-        height: 270
+        width: 1984
+        height: 1088
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a87edbeef221c6fc0800000000000000
-      internalID: -3500402813295532150
+      spriteID: 8fc5dd00354b89e40800000000000000
+      internalID: 5663474800008191224
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      GroundTile_Trees_0: -3500402813295532150
+      trees_clean_0: 5663474800008191224
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
