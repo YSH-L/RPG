@@ -21,6 +21,10 @@ public class Projectile : MonoBehaviour
         damage = dmg;
         speed = projectileSpeed;
         pool = sourcePool;
+
+        // 원본 스프라이트가 오른쪽을 보고 있으므로 날아가는 방향으로 돌린다.
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
     private void OnEnable()

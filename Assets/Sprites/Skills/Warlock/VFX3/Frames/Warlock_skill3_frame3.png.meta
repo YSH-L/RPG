@@ -3,8 +3,8 @@ guid: 262125bca0f43ea4d9b66689343549b7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7169396217941659467
-    second: Warlock_skill3_frame3_0
+      213: 6565670722186047046
+    second: Warlock_skill3_frame3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,25 +113,25 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Warlock_skill3_frame3_0
+      name: Warlock_skill3_frame3
       rect:
         serializedVersion: 2
-        x: 33
-        y: 28
-        width: 65
-        height: 70
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b4f017800efce7360800000000000000
-      internalID: 7169396217941659467
+      spriteID: 46ee1444bcf21d5b44380d8f2d356098
+      internalID: 6565670722186047046
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Warlock_skill3_frame3_0: 7169396217941659467
+      Warlock_skill3_frame3: 6565670722186047046
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

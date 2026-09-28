@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f7268f2fb5b6c4d9d79d4e9a08cb79, type: 3}
+  m_Name: BossStats_FireWorm
+  m_EditorClassIdentifier: Assembly-CSharp::BossStatsData
+  maxHP: 400
+  contactDamage: 16
+  expReward: 150
+  moveSpeed: 1.0
+  detectionRange: 10
+  contactDamageInterval: 1
+  displayName: Fire Worm
+  endsGame: 0
+  meleeRange: 1.8
+  meleeCooldown: 1.8
+  meleeHitDelay: 0.8
+  projectileDamage: 14
+  projectileSpeed: 6
+  rangedCooldown: 2.5
+  rangedMinDistance: 2.5
+  rangedFireDelay: 0.8
