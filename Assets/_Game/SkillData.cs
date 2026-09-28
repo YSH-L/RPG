@@ -46,5 +46,8 @@ public class SkillData : ScriptableObject
     public float projectileSpeed = 9f;
     public float projectileRange = 7f;
 
+    [Header("소리")]
+    public AudioClip castSound;
+
     public int GetDamage(int attackPower) => Mathf.Max(1, Mathf.RoundToInt(attackPower * damageMultiplier));
 }

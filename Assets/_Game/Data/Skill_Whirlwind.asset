@@ -26,3 +26,4 @@ MonoBehaviour:
   radius: 1.8
   projectileSpeed: 9
   projectileRange: 7
+  castSound: {fileID: 8300000, guid: 166b1f43277c48bca41b1a30b766c7d2, type: 3}

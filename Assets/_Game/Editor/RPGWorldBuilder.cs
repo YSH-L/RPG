@@ -31,6 +31,7 @@ public static class RPGWorldBuilder
     private const string WhirlFxFrames = "Assets/Sprites/Skills/Warrior/VFX 1/Frames/warrior_skill1_frame";
     private const string WaveFrames = "Assets/Sprites/Skills/Frost Knight/VFX1/frames/FrostKnight_skill1_frame";
     private const string ShopkeeperIdle = "Assets/Sprites/Character/Archer/Archer-Idle-spritesheet.png";
+    private const string AudioDir = "Assets/Audio/";
 
     private const int LayerDefault = 0;
     private const int LayerPlayer = 9;
@@ -272,12 +273,58 @@ public static class RPGWorldBuilder
         Transform hudForSave = FindHudPanel(roots);
         if (hudForSave != null) BuildSaveIndicator(hudForSave, save);
 
+        // 7) 소리 — 몬스터·보스·스킬 소리는 각 에셋에 이미 들어 있다. 여기서는 씬 쪽만 잇는다.
+        SetupAudio(player, roots, new[] { field1, boss1, field2, boss2 },
+            new[] { "bgm_field1", "bgm_boss", "bgm_field2", "bgm_boss" });
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
 
-        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리, 퀘스트 NPC 2명, 저장 기능을 배치했습니다.");
+        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리, 퀘스트 NPC 2명, 저장 기능, 효과음·배경음악을 배치했습니다.");
         Selection.activeGameObject = generated;
+    }
+
+    // ── 소리 ──────────────────────────────────────────────────────
+
+    private static void SetupAudio(GameObject player, GameObject[] roots, MapArea[] areas, string[] bgms)
+    {
+        SetClips(player.GetComponent<PlayerController>(),
+            ("attackSound", "sfx_swing"), ("hurtSound", "sfx_player_hurt"), ("levelUpSound", "sfx_level_up"));
+        SetClips(player.GetComponent<PlayerInventory>(),
+            ("coinSound", "sfx_coin"), ("buySound", "sfx_buy"), ("potionSound", "sfx_potion"), ("equipSound", "sfx_equip"));
+        SetClips(player.GetComponent<PlayerQuests>(),
+            ("acceptSound", "sfx_quest_accept"), ("completeSound", "sfx_quest_complete"));
+
+        for (int i = 0; i < areas.Length; i++) SetClips(areas[i], ("bgm", bgms[i]));
+
+        GameObject managers = roots.FirstOrDefault(r => r.name == "Managers");
+        if (managers == null)
+        {
+            Debug.LogError("[RPGWorldBuilder] Managers 오브젝트를 찾지 못해 배경음악(MusicDirector)을 연결하지 않았습니다.");
+            return;
+        }
+        MusicDirector music = managers.GetComponent<MusicDirector>();
+        if (music == null) music = managers.AddComponent<MusicDirector>();
+        var so = new SerializedObject(music);
+        so.FindProperty("startArea").objectReferenceValue = areas[0];
+        so.ApplyModifiedPropertiesWithoutUndo();
+        SetClips(music, ("victoryJingle", "jingle_victory"), ("defeatJingle", "jingle_defeat"));
+    }
+
+    private static void SetClips(Component target, params (string field, string clip)[] pairs)
+    {
+        if (target == null) return;
+        var so = new SerializedObject(target);
+        foreach (var (field, clip) in pairs) so.FindProperty(field).objectReferenceValue = LoadClip(clip);
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static AudioClip LoadClip(string fileName)
+    {
+        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(AudioDir + fileName + ".wav");
+        if (clip == null) Debug.LogError($"[RPGWorldBuilder] 소리 파일 없음: {AudioDir}{fileName}.wav");
+        return clip;
     }
 
     [MenuItem("RPG/Delete Save Data")]
@@ -1168,7 +1215,10 @@ public static class RPGWorldBuilder
         FillClip(clips.GetArrayElementAtIndex(0), AnimState.Idle, frames, 10f, true);
         so.ApplyModifiedPropertiesWithoutUndo();
 
-        go.AddComponent<Portal>();
+        Portal portal = go.AddComponent<Portal>();
+        var portalSo = new SerializedObject(portal);
+        portalSo.FindProperty("enterSound").objectReferenceValue = LoadClip("sfx_portal");
+        portalSo.ApplyModifiedPropertiesWithoutUndo();
         return SavePrefab(go, "Portal");
     }
 

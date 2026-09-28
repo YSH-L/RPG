@@ -23,6 +23,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private LayerMask enemyMask;
     [SerializeField, Min(0.01f)] private float groundCheckRadius = 0.12f;
 
+    [Header("소리")]
+    [SerializeField] private AudioClip attackSound;
+    [SerializeField] private AudioClip hurtSound;
+    [SerializeField] private AudioClip levelUpSound;
+
     public int CurrentLevel { get; private set; } = 1;
     public int CurrentExp { get; private set; }
     public int CurrentHP { get; private set; }
@@ -141,6 +146,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private IEnumerator AttackRoutine()
     {
         animator.Play(AnimState.Attack);
+        Sfx.Play(attackSound, 0.8f);
         yield return new WaitForSeconds(data.attackHitDelay);
         if (IsDead) yield break;
 
@@ -172,6 +178,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (leveledUp)
         {
+            Sfx.Play(levelUpSound);
             CurrentHP = MaxHP;
             OnLevelChanged?.Invoke(CurrentLevel);
             OnHPChanged?.Invoke(CurrentHP, MaxHP);
@@ -237,6 +244,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         CurrentHP = Mathf.Max(0, CurrentHP - actual);
 
         CombatEvents.RaiseDamaged(gameObject, actual);
+        Sfx.Play(hurtSound);
         OnHPChanged?.Invoke(CurrentHP, MaxHP);
         invulnerableTimer = data.invulnerabilityDuration;
 

@@ -23,6 +23,7 @@ public class Portal : MonoBehaviour
     [Tooltip("포탈 중심에서 이 가로 거리 안에 플레이어 발이 있으면 입장할 수 있다.")]
     [SerializeField, Min(0.1f)] private float useRadius = 0.7f;
     [SerializeField] private Color lockedColor = new Color(0.35f, 0.35f, 0.35f, 0.5f);
+    [SerializeField] private AudioClip enterSound;
 
     private SpriteRenderer spriteRenderer;
     private Color openColor;
@@ -103,6 +104,7 @@ public class Portal : MonoBehaviour
         }
         player.transform.position = arrivalPoint.position;
 
+        Sfx.Play(enterSound);
         destination.Enter(cameraFollow);
         ShowMessage(destination.DisplayName);
     }

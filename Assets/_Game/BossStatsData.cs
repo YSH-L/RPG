@@ -27,4 +27,8 @@ public class BossStatsData : EnemyStatsData
     public float rangedMinDistance = 1.5f;
     [Tooltip("공격 애니메이션 시작 후 투사체가 나가기까지의 시간(초).")]
     public float rangedFireDelay = 0.35f;
+
+    [Header("소리")]
+    [Tooltip("근접 판정·투사체 발사 순간에 난다.")]
+    public AudioClip attackSound;
 }

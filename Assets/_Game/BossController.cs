@@ -92,6 +92,7 @@ public class BossController : EnemyBase
         animator.Play(AnimState.Attack);
         yield return new WaitForSeconds(Boss.meleeHitDelay);
         if (isDead) yield break;
+        Sfx.Play(Boss.attackSound);
 
         Transform target = PlayerController.Instance != null ? PlayerController.Instance.transform : null;
         if (target == null) yield break;
@@ -109,6 +110,7 @@ public class BossController : EnemyBase
         if (isDead || projectilePool == null) yield break;
 
         Vector3 spawnPos = transform.position + new Vector3(fireOffset.x * facingSign, fireOffset.y, 0f);
+        Sfx.Play(Boss.attackSound);
         GameObject go = projectilePool.Get(spawnPos, Quaternion.identity);
         if (go == null || !go.TryGetComponent<Projectile>(out var projectile)) yield break;
 

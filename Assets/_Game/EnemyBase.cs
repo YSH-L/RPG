@@ -52,6 +52,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         }
         else
         {
+            Sfx.Play(data.hitSound, 0.7f);
             animator.Play(AnimState.Hit);
         }
     }
@@ -59,6 +60,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     protected virtual void Die()
     {
         isDead = true;
+        Sfx.Play(data.deathSound);
         CombatEvents.RaiseDied(gameObject);
         animator.Play(AnimState.Death, force: true);
     }
