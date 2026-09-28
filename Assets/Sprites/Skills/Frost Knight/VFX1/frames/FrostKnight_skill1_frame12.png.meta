@@ -3,14 +3,8 @@ guid: 375c185d3d0f7494e80a8d244389fb08
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7288940528205368561
-    second: FrostKnight_skill1_frame12_0
-  - first:
-      213: 2037074005036357460
-    second: FrostKnight_skill1_frame12_1
-  - first:
-      213: -3141832370570554005
-    second: FrostKnight_skill1_frame12_2
+      213: 3575415716990678411
+    second: FrostKnight_skill1_frame12
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -119,69 +113,25 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: FrostKnight_skill1_frame12_0
+      name: FrostKnight_skill1_frame12
       rect:
         serializedVersion: 2
-        x: 66
-        y: 24
-        width: 178
-        height: 94
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 256
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f03fe53453b78da90800000000000000
-      internalID: -7288940528205368561
+      spriteID: 8bf593b7a66d9e3190b086a57e9d6ce7
+      internalID: 3575415716990678411
       vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: FrostKnight_skill1_frame12_1
-      rect:
-        serializedVersion: 2
-        x: 124
-        y: 10
-        width: 39
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 457df53c304254c10800000000000000
-      internalID: 2037074005036357460
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: FrostKnight_skill1_frame12_2
-      rect:
-        serializedVersion: 2
-        x: 137
-        y: 15
-        width: 37
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b659158ea18f564d0800000000000000
-      internalID: -3141832370570554005
-      vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
@@ -198,9 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      FrostKnight_skill1_frame12_0: -7288940528205368561
-      FrostKnight_skill1_frame12_1: 2037074005036357460
-      FrostKnight_skill1_frame12_2: -3141832370570554005
+      FrostKnight_skill1_frame12: 3575415716990678411
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

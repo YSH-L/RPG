@@ -3,11 +3,8 @@ guid: faa22834260823146a3ae52b6a146ff9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6822020841526128949
-    second: FrostKnight_skill1_frame9_0
-  - first:
-      213: -5150818077432886227
-    second: FrostKnight_skill1_frame9_1
+      213: 5964635285573389418
+    second: FrostKnight_skill1_frame9
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -116,47 +113,25 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: FrostKnight_skill1_frame9_0
+      name: FrostKnight_skill1_frame9
       rect:
         serializedVersion: 2
-        x: 18
-        y: 5
-        width: 226
-        height: 120
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 256
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bce068270305351a0800000000000000
-      internalID: -6822020841526128949
+      spriteID: 6acc5cb330a4c6526021475d1ebac493
+      internalID: 5964635285573389418
       vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: FrostKnight_skill1_frame9_1
-      rect:
-        serializedVersion: 2
-        x: 142
-        y: 116
-        width: 8
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d2cc3ffaf3e9488b0800000000000000
-      internalID: -5150818077432886227
-      vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
@@ -173,8 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      FrostKnight_skill1_frame9_0: -6822020841526128949
-      FrostKnight_skill1_frame9_1: -5150818077432886227
+      FrostKnight_skill1_frame9: 5964635285573389418
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

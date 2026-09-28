@@ -27,6 +27,9 @@ public static class RPGWorldBuilder
     private const string GolemSheet = "Assets/Sprites/Enemy/Boss/Mecha-stone Golem 0.1/PNG sheet/Character_sheet.png";
     private const string GolemArm = "Assets/Sprites/Enemy/Boss/Mecha-stone Golem 0.1/weapon PNG/arm_projectile.png";
     private const string PortalFrames = "Assets/Sprites/Skills/Warlock/VFX3/Frames/";
+    private const string DashFxFrames = "Assets/Sprites/Skills/Slash/128x128/Slash 2/color5/Frames/Slash2_color5_frame";
+    private const string WhirlFxFrames = "Assets/Sprites/Skills/Warrior/VFX 1/Frames/warrior_skill1_frame";
+    private const string WaveFrames = "Assets/Sprites/Skills/Frost Knight/VFX1/frames/FrostKnight_skill1_frame";
 
     private const int LayerDefault = 0;
     private const int LayerPlayer = 9;
@@ -132,6 +135,9 @@ public static class RPGWorldBuilder
         GameObject wormPrefab = BuildWormPrefab();
         GameObject golemPrefab = BuildGolemPrefab();
         GameObject portalPrefab = BuildPortalPrefab();
+        GameObject dashFxPrefab = BuildEffectPrefab("FX_DashSlash", NumberedFrames(DashFxFrames, 1, 7), 18f, 1.5f);
+        GameObject whirlFxPrefab = BuildEffectPrefab("FX_Whirlwind", NumberedFrames(WhirlFxFrames, 1, 10), 18f, 2.8f);
+        GameObject swordWavePrefab = BuildSwordWavePrefab();
 
         // 2) 씬
         GameObject[] roots = scene.GetRootGameObjects();
@@ -195,6 +201,13 @@ public static class RPGWorldBuilder
         // 화면 상단 보스 체력바. HUD_Panel 안에 넣어서 GameOver 때 패널째로 숨겨지게 한다.
         BuildBossHealthBar(roots);
 
+        // 플레이어 스킬 (Z / X / C) + 화면 하단 스킬 칸
+        ObjectPool dashFxPool = CreatePool(poolRoot.transform, "Pool_FxDashSlash", dashFxPrefab, 2);
+        ObjectPool whirlFxPool = CreatePool(poolRoot.transform, "Pool_FxWhirlwind", whirlFxPrefab, 2);
+        ObjectPool swordWavePool = CreatePool(poolRoot.transform, "Pool_SwordWave", swordWavePrefab, 4);
+        PlayerSkills skills = SetupPlayerSkills(player, dashFxPool, whirlFxPool, swordWavePool);
+        BuildSkillHUD(roots, skills);
+
         // 5) 포탈
         float leftX = groundLeft + 2.5f;
         float rightX = groundRight - 2.5f;
@@ -214,7 +227,7 @@ public static class RPGWorldBuilder
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
 
-        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바를 배치했습니다.");
+        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개를 배치했습니다.");
         Selection.activeGameObject = generated;
     }
 
@@ -361,10 +374,7 @@ public static class RPGWorldBuilder
 
     private static void BuildBossHealthBar(GameObject[] roots)
     {
-        GameObject canvas = roots.FirstOrDefault(r => r.name == "Canvas");
-        Transform hud = canvas != null
-            ? canvas.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "HUD_Panel")
-            : null;
+        Transform hud = FindHudPanel(roots);
         if (hud == null)
         {
             Debug.LogError("[RPGWorldBuilder] Canvas/HUD_Panel을 찾지 못해 보스 체력바를 만들지 않았습니다.");
@@ -457,6 +467,127 @@ public static class RPGWorldBuilder
     private static void SetImageColor(Transform t, Color color)
     {
         if (t != null && t.TryGetComponent<Image>(out var image)) image.color = color;
+    }
+
+    // ── 플레이어 스킬 ───────────────────────────────────────────────
+
+    private static PlayerSkills SetupPlayerSkills(GameObject player, ObjectPool dashFx, ObjectPool whirlFx, ObjectPool swordWave)
+    {
+        PlayerSkills skills = player.GetComponent<PlayerSkills>();
+        if (skills == null) skills = player.AddComponent<PlayerSkills>();
+
+        var so = new SerializedObject(skills);
+        so.FindProperty("player").objectReferenceValue = player.GetComponent<PlayerController>();
+        so.FindProperty("animator").objectReferenceValue = player.GetComponent<SpriteAnimator>();
+        so.FindProperty("enemyMask").intValue = 1 << LayerEnemy;
+
+        SerializedProperty slots = so.FindProperty("slots");
+        slots.arraySize = 3;
+        FillSkillSlot(slots.GetArrayElementAtIndex(0), "Skill_DashSlash", dashFx, null);
+        FillSkillSlot(slots.GetArrayElementAtIndex(1), "Skill_Whirlwind", whirlFx, null);
+        FillSkillSlot(slots.GetArrayElementAtIndex(2), "Skill_SwordWave", null, swordWave);
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return skills;
+    }
+
+    private static void FillSkillSlot(SerializedProperty slot, string skillAsset, ObjectPool effectPool, ObjectPool projectilePool)
+    {
+        slot.FindPropertyRelative("skill").objectReferenceValue = LoadData<SkillData>(skillAsset);
+        slot.FindPropertyRelative("effectPool").objectReferenceValue = effectPool;
+        slot.FindPropertyRelative("projectilePool").objectReferenceValue = projectilePool;
+    }
+
+    private static void BuildSkillHUD(GameObject[] roots, PlayerSkills skills)
+    {
+        Transform hud = FindHudPanel(roots);
+        if (hud == null)
+        {
+            Debug.LogError("[RPGWorldBuilder] Canvas/HUD_Panel을 찾지 못해 스킬 칸을 만들지 않았습니다.");
+            return;
+        }
+
+        Transform old = hud.Find("SkillBar");
+        if (old != null) Object.DestroyImmediate(old.gameObject);
+
+        var bar = new GameObject("SkillBar", typeof(RectTransform));
+        bar.transform.SetParent(hud, false);
+        var barRt = bar.GetComponent<RectTransform>();
+        barRt.anchorMin = new Vector2(0.5f, 0f);
+        barRt.anchorMax = new Vector2(0.5f, 0f);
+        barRt.pivot = new Vector2(0.5f, 0f);
+        barRt.anchoredPosition = new Vector2(0f, 20f);
+        barRt.sizeDelta = new Vector2(3 * 90f - 10f, 80f);
+
+        SkillHUD skillHud = bar.AddComponent<SkillHUD>();
+        var so = new SerializedObject(skillHud);
+        so.FindProperty("skills").objectReferenceValue = skills;
+        SerializedProperty views = so.FindProperty("views");
+        views.arraySize = 3;
+
+        for (int i = 0; i < 3; i++)
+        {
+            var slot = new GameObject("Slot_" + PlayerSkills.KeyLabel(i), typeof(RectTransform));
+            slot.transform.SetParent(bar.transform, false);
+            var slotRt = slot.GetComponent<RectTransform>();
+            slotRt.anchorMin = new Vector2(0f, 0f);
+            slotRt.anchorMax = new Vector2(0f, 1f);
+            slotRt.pivot = new Vector2(0f, 0.5f);
+            slotRt.anchoredPosition = new Vector2(i * 90f, 0f);
+            slotRt.sizeDelta = new Vector2(80f, 0f);
+            Image background = slot.AddComponent<Image>();
+            background.color = new Color(0.15f, 0.2f, 0.35f, 0.9f);
+
+            var cover = new GameObject("CooldownCover", typeof(RectTransform));
+            cover.transform.SetParent(slot.transform, false);
+            var coverRt = cover.GetComponent<RectTransform>();
+            coverRt.anchorMin = Vector2.zero;
+            coverRt.anchorMax = new Vector2(1f, 0f);
+            coverRt.offsetMin = Vector2.zero;
+            coverRt.offsetMax = Vector2.zero;
+            cover.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.6f);
+
+            TextMeshProUGUI keyText = CreateText(slot.transform, "KeyText", PlayerSkills.KeyLabel(i), 22f,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(6f, -4f), new Vector2(30f, 26f), TextAlignmentOptions.TopLeft);
+            TextMeshProUGUI labelText = CreateText(slot.transform, "LabelText", "", 14f,
+                new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 4f), new Vector2(0f, 22f), TextAlignmentOptions.Bottom);
+
+            SerializedProperty view = views.GetArrayElementAtIndex(i);
+            view.FindPropertyRelative("background").objectReferenceValue = background;
+            view.FindPropertyRelative("cooldownCover").objectReferenceValue = coverRt;
+            view.FindPropertyRelative("keyText").objectReferenceValue = keyText;
+            view.FindPropertyRelative("labelText").objectReferenceValue = labelText;
+        }
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        foreach (Transform t in bar.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 5;   // UI
+    }
+
+    private static TextMeshProUGUI CreateText(Transform parent, string objName, string text, float fontSize,
+        Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 size, TextAlignmentOptions alignment)
+    {
+        var go = new GameObject(objName, typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = anchorMin;
+        rt.anchorMax = anchorMax;
+        rt.pivot = new Vector2(anchorMin.x == anchorMax.x ? anchorMin.x : 0.5f, anchorMin.y);
+        rt.anchoredPosition = position;
+        rt.sizeDelta = size;
+        TextMeshProUGUI tmp = go.AddComponent<TextMeshProUGUI>();
+        tmp.text = text;
+        tmp.fontSize = fontSize;
+        tmp.alignment = alignment;
+        tmp.color = Color.white;
+        tmp.raycastTarget = false;
+        return tmp;
+    }
+
+    private static Transform FindHudPanel(GameObject[] roots)
+    {
+        GameObject canvas = roots.FirstOrDefault(r => r.name == "Canvas");
+        return canvas != null
+            ? canvas.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "HUD_Panel")
+            : null;
     }
 
     // ── 프리팹 ─────────────────────────────────────────────────────
@@ -595,9 +726,68 @@ public static class RPGWorldBuilder
         return SavePrefab(go, "Portal");
     }
 
+    /// <summary>한 번 재생하고 풀로 돌아가는 이펙트. 프레임은 Death 칸에 넣는다 (SkillEffect 참고).</summary>
+    private static GameObject BuildEffectPrefab(string prefabName, List<Sprite> frames, float fps, float scale)
+    {
+        var go = new GameObject(prefabName);
+        go.transform.localScale = new Vector3(scale, scale, 1f);
+
+        SpriteAnimator animator = go.AddComponent<SpriteAnimator>();
+        SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+        sr.sortingOrder = 7;
+        sr.sprite = frames.FirstOrDefault();
+
+        var so = new SerializedObject(animator);
+        SerializedProperty clips = so.FindProperty("clips");
+        clips.arraySize = 1;
+        FillClip(clips.GetArrayElementAtIndex(0), AnimState.Death, frames, fps, false);
+        so.FindProperty("defaultState").enumValueIndex = (int)AnimState.Death;
+        so.FindProperty("spriteFacesRight").boolValue = true;
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        SkillEffect effect = go.AddComponent<SkillEffect>();
+        var effectSo = new SerializedObject(effect);
+        effectSo.FindProperty("animator").objectReferenceValue = animator;
+        effectSo.ApplyModifiedPropertiesWithoutUndo();
+
+        return SavePrefab(go, prefabName);
+    }
+
+    private static GameObject BuildSwordWavePrefab()
+    {
+        var go = new GameObject("Projectile_SwordWave");
+        go.layer = LayerDefault;
+        // 파동은 256px 칸의 오른쪽 절반에 그려져 있다. 마지막 두 프레임만 반복한다.
+        AddAnimator(go, new[] { new ClipDef(AnimState.Idle, null, 10f, true) }, 7, NumberedFrames(WaveFrames, 13, 14));
+
+        // 적 콜라이더는 Rigidbody 없는 트리거라, 이쪽에 Kinematic Rigidbody가 있어야 트리거가 성립한다.
+        var body = go.AddComponent<Rigidbody2D>();
+        body.bodyType = RigidbodyType2D.Kinematic;
+
+        var col = go.AddComponent<BoxCollider2D>();
+        col.isTrigger = true;
+        col.size = new Vector2(1.1f, 1.0f);
+        col.offset = new Vector2(0.5f, 0f);
+
+        Projectile projectile = go.AddComponent<Projectile>();
+        var so = new SerializedObject(projectile);
+        so.FindProperty("targetMask").intValue = 1 << LayerEnemy;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return SavePrefab(go, "Projectile_SwordWave");
+    }
+
+    /// <summary>파일마다 한 프레임씩 나뉜 이펙트 (…frame1.png ~ …frameN.png).</summary>
+    private static List<Sprite> NumberedFrames(string pathPrefix, int from, int to)
+    {
+        var frames = new List<Sprite>();
+        for (int i = from; i <= to; i++) frames.AddRange(LoadFrames(pathPrefix + i + ".png", null));
+        if (frames.Count == 0) Debug.LogError($"[RPGWorldBuilder] 프레임 없음: {pathPrefix}{from}~{to}");
+        return frames;
+    }
+
     // ── 공용 도우미 ─────────────────────────────────────────────────
 
-    private static SpriteAnimator AddAnimator(GameObject go, ClipDef[] defs, int sortingOrder)
+    private static SpriteAnimator AddAnimator(GameObject go, ClipDef[] defs, int sortingOrder, List<Sprite> explicitFrames = null)
     {
         SpriteAnimator animator = go.AddComponent<SpriteAnimator>();   // SpriteRenderer는 RequireComponent로 같이 붙는다
         SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
@@ -608,7 +798,7 @@ public static class RPGWorldBuilder
         clips.arraySize = defs.Length;
         for (int i = 0; i < defs.Length; i++)
         {
-            List<Sprite> frames = LoadFrames(defs[i].path, defs[i].prefix);
+            List<Sprite> frames = explicitFrames ?? LoadFrames(defs[i].path, defs[i].prefix);
             if (frames.Count == 0) Debug.LogError($"[RPGWorldBuilder] 프레임 없음: {defs[i].path} {defs[i].prefix}");
             FillClip(clips.GetArrayElementAtIndex(i), defs[i].state, frames, defs[i].fps, defs[i].loop);
             if (i == 0) sr.sprite = frames.FirstOrDefault();

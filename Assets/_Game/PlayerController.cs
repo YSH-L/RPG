@@ -29,6 +29,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     public int MaxHP => data.GetMaxHP(CurrentLevel);
     public int ExpToNextLevel => CurrentLevel >= data.maxLevel ? 0 : data.GetExpToNextLevel(CurrentLevel);
     public bool IsDead { get; private set; }
+    public int AttackPower => data.GetAttackPower(CurrentLevel);
+    /// <summary>바라보는 방향. 오른쪽 1, 왼쪽 -1.</summary>
+    public float FacingSign => facingSign;
+    /// <summary>켜져 있으면 이동·점프·기본 공격 입력을 받지 않는다. 돌진 같은 스킬이 몸을 직접 움직이는 동안 켠다.</summary>
+    public bool ControlLocked { get; set; }
 
     /// <summary>레벨이 바뀔 때. (새 레벨)</summary>
     public event Action<int> OnLevelChanged;
@@ -86,6 +91,12 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (invulnerableTimer > 0f) invulnerableTimer -= Time.deltaTime;
         if (attackCooldownTimer > 0f) attackCooldownTimer -= Time.deltaTime;
+
+        if (ControlLocked)
+        {
+            ignoreJumpThisFrame = false;
+            return;
+        }
 
         Keyboard kb = Keyboard.current;
         if (kb == null) return;
@@ -163,6 +174,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         OnExpChanged?.Invoke(CurrentExp, ExpToNextLevel);
+    }
+
+    /// <summary>최소 seconds 동안 피해를 받지 않는다. 이미 더 긴 무적이 걸려 있으면 그대로 둔다.</summary>
+    public void GrantInvulnerability(float seconds)
+    {
+        invulnerableTimer = Mathf.Max(invulnerableTimer, seconds);
     }
 
     public void TakeDamage(int amount)

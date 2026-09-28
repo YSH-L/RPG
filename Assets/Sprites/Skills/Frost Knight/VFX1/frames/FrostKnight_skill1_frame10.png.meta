@@ -3,8 +3,8 @@ guid: 7354ccf57e41cf34d8bf17084cad4104
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4212975083033712618
-    second: FrostKnight_skill1_frame10_0
+      213: 5506992982460300691
+    second: FrostKnight_skill1_frame10
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,25 +113,25 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: FrostKnight_skill1_frame10_0
+      name: FrostKnight_skill1_frame10
       rect:
         serializedVersion: 2
-        x: 39
-        y: 2
-        width: 205
-        height: 122
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 256
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6182438bb718885c0800000000000000
-      internalID: -4212975083033712618
+      spriteID: 937d1db4f0c46c4cdfe1c43dcbf135b7
+      internalID: 5506992982460300691
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      FrostKnight_skill1_frame10_0: -4212975083033712618
+      FrostKnight_skill1_frame10: 5506992982460300691
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
