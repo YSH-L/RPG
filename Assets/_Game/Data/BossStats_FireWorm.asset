@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: BossStats_FireWorm
   m_EditorClassIdentifier: Assembly-CSharp::BossStatsData
   maxHP: 400
-  contactDamage: 16
-  expReward: 150
-  goldReward: 300
-  moveSpeed: 1.0
-  detectionRange: 10
+  contactDamage: 20
+  expReward: 500
+  goldReward: 5
+  moveSpeed: 2
+  detectionRange: 8
   contactDamageInterval: 1
   displayName: Fire Worm
-  endsGame: 0
-  meleeRange: 1.8
-  meleeCooldown: 1.8
-  meleeHitDelay: 0.8
-  projectileDamage: 14
-  projectileSpeed: 6
-  rangedCooldown: 2.5
+  endsGame: 1
+  meleeRange: 1.5
+  meleeCooldown: 1.5
+  meleeHitDelay: 0.3
+  projectileDamage: 15
+  projectileSpeed: 7
+  rangedCooldown: 3
   rangedMinDistance: 2.5
-  rangedFireDelay: 0.8
+  rangedFireDelay: 0.35

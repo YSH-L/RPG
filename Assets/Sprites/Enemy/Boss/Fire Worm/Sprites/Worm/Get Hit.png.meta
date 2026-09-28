@@ -57,7 +57,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -115,6 +115,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -126,18 +139,18 @@ TextureImporter:
         y: 0
         width: 90
         height: 90
-      alignment: 9
-      pivot: {x: 0.5, y: 0.355556}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 354a15a73808ee46c690cb45a8168e9b
+      spriteID: 53a4517a8380ee640800000000000000
       internalID: 5111031666526472757
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     - serializedVersion: 2
@@ -148,18 +161,18 @@ TextureImporter:
         y: 0
         width: 90
         height: 90
-      alignment: 9
-      pivot: {x: 0.5, y: 0.355556}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: b7fe63a9c69e8e46c8d650ee167c0a18
+      spriteID: 7bef369a6ce9e8640800000000000000
       internalID: 5084175605430484663
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     - serializedVersion: 2
@@ -170,18 +183,18 @@ TextureImporter:
         y: 0
         width: 90
         height: 90
-      alignment: 9
-      pivot: {x: 0.5, y: 0.355556}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 7ab7a7eac6d144cf7f3fb66026ea43b4
+      spriteID: a77b7aae6c1d44fc0800000000000000
       internalID: -3511451157171554438
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     outline: []
