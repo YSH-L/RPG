@@ -28,11 +28,7 @@ MonoBehaviour:
   projectileSpeed: 7
   rangedCooldown: 3
   rangedMinDistance: 2.5
-<<<<<<< HEAD
-  rangedFireDelay: 0.35
-=======
   rangedFireDelay: 0.8
   hitSound: {fileID: 8300000, guid: acaa02ff034c4b99b72512283dc0facd, type: 3}
   deathSound: {fileID: 8300000, guid: a3d7778d1fca423f9754166cd13db23c, type: 3}
   attackSound: {fileID: 8300000, guid: efe379de0329427fa6ce1e7e870e0b00, type: 3}
->>>>>>> 0660c97fec4140a8905e6bfa9091ef62af11b914

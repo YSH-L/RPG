@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3560036391265505006}
   - component: {fileID: 4439061643935480111}
-  - component: {fileID: 5326911612314662222}
   - component: {fileID: 658075953713674269}
+  - component: {fileID: 7238383011005286538}
   - component: {fileID: 5690722615673524165}
   m_Layer: 10
   m_Name: Enemy_Slime
@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 4561384860515544426}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 0.28469998, z: 0}
-  m_LocalScale: {x: 2.6, y: 2.6, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -89,47 +89,11 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.56, y: 1.56}
+  m_Size: {x: 4.875, y: 4.875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!58 &5326911612314662222
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4561384860515544426}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.28
 --- !u!114 &658075953713674269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,8 +133,31 @@ MonoBehaviour:
     - {fileID: -3714987382563562326, guid: 90283cdf9b552ee45b3378f19e7ce6a9, type: 3}
     - {fileID: -2044624726750869082, guid: 90283cdf9b552ee45b3378f19e7ce6a9, type: 3}
     - {fileID: -1800561202758830752, guid: 90283cdf9b552ee45b3378f19e7ce6a9, type: 3}
-    framesPerSecond: 8
+    framesPerSecond: 10
     loop: 1
+  - state: 3
+    frames:
+    - {fileID: 827538889749247048, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: -5010287565412364656, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: -5463148037355797382, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: -5182820943178688908, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 7402079830906333199, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 1372099006290288469, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: -5569035362507985257, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: -5789285544991574940, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 6712529985953942657, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: -3996406334776252399, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 4918900733310490901, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: -625631833852202795, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 6012938448837418133, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 6768331479742512771, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: -1910202648154200349, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 6361701551263939874, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 236178773030268874, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 8584156483031674292, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    - {fileID: 5831363709815067099, guid: 06c241af83cbcd3488070e61c9ff1c9b, type: 3}
+    framesPerSecond: 14
+    loop: 0
   - state: 4
     frames:
     - {fileID: -3582916166963785052, guid: 1aacc8d4661410546a99a6f6a487cbcc, type: 3}
@@ -191,11 +178,57 @@ MonoBehaviour:
     - {fileID: 2602597460433512539, guid: 378e466289ee2ad48884bdb20ffa96f0, type: 3}
     - {fileID: -2134515381725696932, guid: 378e466289ee2ad48884bdb20ffa96f0, type: 3}
     - {fileID: -270028788923616002, guid: 378e466289ee2ad48884bdb20ffa96f0, type: 3}
-    framesPerSecond: 12
+    framesPerSecond: 8
     loop: 0
   defaultState: 0
   returnState: 0
   spriteFacesRight: 1
+--- !u!61 &7238383011005286538
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4561384860515544426}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0.31}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.442308}
+    oldSize: {x: 4.875, y: 4.875}
+    newSize: {x: 4.875, y: 4.875}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1.2, y: 0.6}
+  m_EdgeRadius: 0
 --- !u!114 &5690722615673524165
 MonoBehaviour:
   m_ObjectHideFlags: 0
