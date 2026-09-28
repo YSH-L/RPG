@@ -99,7 +99,7 @@ public class Portal : MonoBehaviour
         }
         player.transform.position = arrivalPoint.position;
 
-        destination.ApplyCamera(cameraFollow);
+        destination.Enter(cameraFollow);
         ShowMessage(destination.DisplayName);
     }
 

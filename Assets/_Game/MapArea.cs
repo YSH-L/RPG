@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -11,16 +12,25 @@ public class MapArea : MonoBehaviour
     [SerializeField] private Vector2 cameraMin;
     [Tooltip("이 맵에 있는 동안 카메라 중심이 갈 수 있는 최대 좌표.")]
     [SerializeField] private Vector2 cameraMax;
+    [Tooltip("보스맵이면 그 보스. 들어오면 화면 상단에 체력바가 뜬다. 필드는 비워둔다.")]
+    [SerializeField] private BossController boss;
 
     public string DisplayName => displayName;
+    public BossController Boss => boss;
 
-    /// <summary>카메라를 이 맵의 경계로 바꾸고 즉시 붙인다. 순간이동 직후에 부른다.</summary>
-    public void ApplyCamera(CameraFollow2D cameraFollow)
+    /// <summary>플레이어가 포탈로 이 맵에 들어왔을 때. 구독했으면 OnDisable에서 해제한다.</summary>
+    public static event Action<MapArea> OnEntered;
+
+    /// <summary>카메라를 이 맵의 경계로 바꾸고 즉시 붙인 뒤 입장을 알린다. 순간이동 직후에 부른다.</summary>
+    public void Enter(CameraFollow2D cameraFollow)
     {
-        if (cameraFollow == null) return;
+        if (cameraFollow != null)
+        {
+            cameraFollow.SetBounds(cameraMin, cameraMax);
+            cameraFollow.SnapToTarget();
+        }
 
-        cameraFollow.SetBounds(cameraMin, cameraMax);
-        cameraFollow.SnapToTarget();
+        OnEntered?.Invoke(this);
     }
 
     private void OnDrawGizmosSelected()
