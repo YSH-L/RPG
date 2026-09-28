@@ -20,4 +20,10 @@ public class EnemyStatsData : ScriptableObject
     public float detectionRange = 4f;
     [Tooltip("접촉 피해를 반복해서 주는 간격(초).")]
     public float contactDamageInterval = 1f;
+
+    [Header("소리")]
+    [Tooltip("맞았을 때 (죽는 타격은 제외).")]
+    public AudioClip hitSound;
+    [Tooltip("죽었을 때.")]
+    public AudioClip deathSound;
 }

@@ -19,3 +19,5 @@ MonoBehaviour:
   moveSpeed: 0.9
   detectionRange: 2.5
   contactDamageInterval: 1.2
+  hitSound: {fileID: 8300000, guid: acaa02ff034c4b99b72512283dc0facd, type: 3}
+  deathSound: {fileID: 8300000, guid: 3d7ab35689e14582a38e6d424544d0e2, type: 3}

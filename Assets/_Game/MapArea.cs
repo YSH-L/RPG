@@ -18,11 +18,14 @@ public class MapArea : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
     [Tooltip("보스맵이면 그 앞 필드. 저장을 불러올 때 보스맵 대신 여기서 시작한다.")]
     [SerializeField] private MapArea retreatTo;
+    [Tooltip("이 맵에 있는 동안 반복할 배경음악. MusicDirector가 튼다.")]
+    [SerializeField] private AudioClip bgm;
 
     public string DisplayName => displayName;
     public BossController Boss => boss;
     public Transform SpawnPoint => spawnPoint;
     public MapArea RetreatTo => retreatTo;
+    public AudioClip Bgm => bgm;
 
     /// <summary>플레이어가 포탈로 이 맵에 들어왔을 때. 구독했으면 OnDisable에서 해제한다.</summary>
     public static event Action<MapArea> OnEntered;

@@ -114,6 +114,7 @@ public class PlayerSkills : MonoBehaviour
         }
 
         cooldowns[index] = skill.cooldown;
+        Sfx.Play(skill.castSound);
         Slot slot = slots[index];
 
         switch (skill.type)

@@ -13,6 +13,10 @@ public class PlayerQuests : MonoBehaviour
     [Tooltip("메인 퀘스트 순서.")]
     [SerializeField] private QuestData[] chain;
 
+    [Header("소리")]
+    [SerializeField] private AudioClip acceptSound;
+    [SerializeField] private AudioClip completeSound;
+
     public QuestData CurrentQuest => chain != null && currentIndex < chain.Length ? chain[currentIndex] : null;
     public bool IsAccepted { get; private set; }
     public bool AllDone => CurrentQuest == null;
@@ -63,6 +67,7 @@ public class PlayerQuests : MonoBehaviour
         if (CurrentQuest == null || IsAccepted) return;
 
         IsAccepted = true;
+        Sfx.Play(acceptSound);
         kills = new int[CurrentQuest.objectives.Length];
         wasReady = false;
         ShowMessage($"Quest accepted: {CurrentQuest.title}");
@@ -75,6 +80,7 @@ public class PlayerQuests : MonoBehaviour
         if (!IsReadyToReport) return false;
 
         QuestData done = CurrentQuest;
+        Sfx.Play(completeSound);
         currentIndex++;
         IsAccepted = false;
         kills = new int[0];
