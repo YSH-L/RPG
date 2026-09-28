@@ -130,6 +130,27 @@ public class PlayerInventory : MonoBehaviour
         OnChanged?.Invoke();
     }
 
+    /// <summary>저장에서 불러온 상태로 통째로 바꾼다. 장비 보너스도 다시 적용한다.</summary>
+    public void RestoreState(int gold, IEnumerable<KeyValuePair<ItemData, int>> items, ItemData weapon, ItemData armor)
+    {
+        Gold = Mathf.Max(0, gold);
+        counts.Clear();
+        order.Clear();
+        foreach (KeyValuePair<ItemData, int> pair in items)
+        {
+            if (pair.Key == null || pair.Value <= 0) continue;
+            if (!counts.ContainsKey(pair.Key)) order.Add(pair.Key);
+            counts[pair.Key] = pair.Value;
+        }
+
+        // 가진 장비만 낄 수 있다.
+        EquippedWeapon = weapon != null && CountOf(weapon) > 0 ? weapon : null;
+        EquippedArmor = armor != null && CountOf(armor) > 0 ? armor : null;
+
+        ApplyEquipment();
+        OnChanged?.Invoke();
+    }
+
     /// <summary>같은 칸의 장비는 바꿔 낀다. 가진 장비만 낄 수 있다.</summary>
     public void Equip(ItemData item)
     {

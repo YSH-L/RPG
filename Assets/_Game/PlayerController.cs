@@ -182,6 +182,20 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
 
     /// <summary>
+    /// 저장에서 불러온 레벨·경험치로 되돌린다. HP는 가득 채운다. 레벨업 연출(메시지)은 띄우지 않는다.
+    /// </summary>
+    public void RestoreProgress(int level, int exp)
+    {
+        CurrentLevel = Mathf.Clamp(level, 1, data.maxLevel);
+        CurrentExp = CurrentLevel >= data.maxLevel ? 0 : Mathf.Max(0, exp);
+        CurrentHP = MaxHP;
+
+        OnLevelChanged?.Invoke(CurrentLevel);
+        OnExpChanged?.Invoke(CurrentExp, ExpToNextLevel);
+        OnHPChanged?.Invoke(CurrentHP, MaxHP);
+    }
+
+    /// <summary>
     /// 장비 보너스를 통째로 바꾼다. 최대 HP가 늘면 늘어난 만큼 현재 HP도 채우고, 줄면 최대치에 맞춰 깎는다.
     /// </summary>
     public void SetEquipmentBonus(int attack, int defense, int maxHP)
