@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 메뉴 한 번으로 일반 몬스터 8종·보스 2종·포탈·맵 4개를 RPG.unity에 배치한다.
@@ -186,7 +188,12 @@ public static class RPGWorldBuilder
 
         // 4) 보스 — 오른쪽 끝에서 기다린다
         BossController worm = PlaceBoss(wormPrefab, boss1.transform, new Vector3(AreaSpacing * 1f + 18f, 0f, 0f), fireballPool);
-        PlaceBoss(golemPrefab, boss2.transform, new Vector3(AreaSpacing * 3f + 18f, 0f, 0f), armPool);
+        BossController golem = PlaceBoss(golemPrefab, boss2.transform, new Vector3(AreaSpacing * 3f + 18f, 0f, 0f), armPool);
+        SetAreaBoss(boss1, worm);
+        SetAreaBoss(boss2, golem);
+
+        // 화면 상단 보스 체력바. HUD_Panel 안에 넣어서 GameOver 때 패널째로 숨겨지게 한다.
+        BuildBossHealthBar(roots);
 
         // 5) 포탈
         float leftX = groundLeft + 2.5f;
@@ -207,7 +214,7 @@ public static class RPGWorldBuilder
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
 
-        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개를 배치했습니다.");
+        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바를 배치했습니다.");
         Selection.activeGameObject = generated;
     }
 
@@ -340,6 +347,116 @@ public static class RPGWorldBuilder
         so.FindProperty("requiredLevel").intValue = requiredLevel;
         so.FindProperty("unlockOnDeath").objectReferenceValue = unlockOnDeath;
         so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void SetAreaBoss(MapArea area, BossController boss)
+    {
+        var so = new SerializedObject(area);
+        so.FindProperty("boss").objectReferenceValue = boss;
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    // ── 보스 체력바 UI ───────────────────────────────────────────────
+    // 처음 위치·크기만 잡아준다. 색·폰트·위치는 인스펙터에서 조정한다.
+
+    private static void BuildBossHealthBar(GameObject[] roots)
+    {
+        GameObject canvas = roots.FirstOrDefault(r => r.name == "Canvas");
+        Transform hud = canvas != null
+            ? canvas.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "HUD_Panel")
+            : null;
+        if (hud == null)
+        {
+            Debug.LogError("[RPGWorldBuilder] Canvas/HUD_Panel을 찾지 못해 보스 체력바를 만들지 않았습니다.");
+            return;
+        }
+
+        Transform old = hud.Find("BossHPBar");
+        if (old != null) Object.DestroyImmediate(old.gameObject);
+
+        // 스크립트는 항상 켜져 있는 바깥 오브젝트에, 켜고 끄는 건 안쪽 Content에.
+        var root = new GameObject("BossHPBar", typeof(RectTransform));
+        root.transform.SetParent(hud, false);
+        var rootRt = root.GetComponent<RectTransform>();
+        rootRt.anchorMin = Vector2.zero;
+        rootRt.anchorMax = Vector2.one;
+        rootRt.offsetMin = Vector2.zero;
+        rootRt.offsetMax = Vector2.zero;
+
+        var content = new GameObject("Content", typeof(RectTransform));
+        content.transform.SetParent(root.transform, false);
+        var contentRt = content.GetComponent<RectTransform>();
+        contentRt.anchorMin = new Vector2(0.5f, 1f);
+        contentRt.anchorMax = new Vector2(0.5f, 1f);
+        contentRt.pivot = new Vector2(0.5f, 1f);
+        contentRt.anchoredPosition = new Vector2(0f, -20f);
+        contentRt.sizeDelta = new Vector2(700f, 60f);
+
+        var nameGo = new GameObject("NameText", typeof(RectTransform));
+        nameGo.transform.SetParent(content.transform, false);
+        var nameRt = nameGo.GetComponent<RectTransform>();
+        nameRt.anchorMin = new Vector2(0f, 1f);
+        nameRt.anchorMax = new Vector2(1f, 1f);
+        nameRt.pivot = new Vector2(0.5f, 1f);
+        nameRt.anchoredPosition = Vector2.zero;
+        nameRt.sizeDelta = new Vector2(0f, 30f);
+        TextMeshProUGUI nameText = nameGo.AddComponent<TextMeshProUGUI>();
+        nameText.text = "Boss";
+        nameText.fontSize = 24f;
+        nameText.alignment = TextAlignmentOptions.Center;
+        nameText.color = Color.white;
+
+        // DefaultControls는 손잡이가 달린 입력용 슬라이더를 만든다. 손잡이를 떼고 표시 전용으로 바꾼다.
+        GameObject sliderGo = DefaultControls.CreateSlider(new DefaultControls.Resources());
+        sliderGo.name = "HPSlider";
+        sliderGo.transform.SetParent(content.transform, false);
+        var sliderRt = sliderGo.GetComponent<RectTransform>();
+        sliderRt.anchorMin = Vector2.zero;
+        sliderRt.anchorMax = new Vector2(1f, 0f);
+        sliderRt.pivot = new Vector2(0.5f, 0f);
+        sliderRt.anchoredPosition = Vector2.zero;
+        sliderRt.sizeDelta = new Vector2(0f, 22f);
+
+        Slider slider = sliderGo.GetComponent<Slider>();
+        Transform handleArea = sliderGo.transform.Find("Handle Slide Area");
+        if (handleArea != null) Object.DestroyImmediate(handleArea.gameObject);
+        slider.handleRect = null;
+        slider.interactable = false;
+        slider.transition = Selectable.Transition.None;
+        slider.minValue = 0f;
+        slider.maxValue = 1f;
+        slider.value = 1f;
+
+        StretchFull(sliderGo.transform.Find("Background") as RectTransform);
+        StretchFull(sliderGo.transform.Find("Fill Area") as RectTransform);
+        StretchFull(sliderGo.transform.Find("Fill Area/Fill") as RectTransform);
+        SetImageColor(sliderGo.transform.Find("Background"), new Color(0.1f, 0.1f, 0.12f, 0.85f));
+        SetImageColor(sliderGo.transform.Find("Fill Area/Fill"), new Color(0.85f, 0.15f, 0.15f, 1f));
+
+        foreach (Transform t in root.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 5;   // UI
+
+        content.SetActive(false);
+
+        BossHealthBar bar = root.AddComponent<BossHealthBar>();
+        var so = new SerializedObject(bar);
+        so.FindProperty("content").objectReferenceValue = content;
+        so.FindProperty("hpSlider").objectReferenceValue = slider;
+        so.FindProperty("nameText").objectReferenceValue = nameText;
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void StretchFull(RectTransform rt)
+    {
+        if (rt == null) return;
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+    }
+
+    private static void SetImageColor(Transform t, Color color)
+    {
+        if (t != null && t.TryGetComponent<Image>(out var image)) image.color = color;
     }
 
     // ── 프리팹 ─────────────────────────────────────────────────────

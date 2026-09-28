@@ -16,6 +16,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     [SerializeField] protected ObjectPool pool;
 
     public int CurrentHP { get; protected set; }
+    public int MaxHP => data.maxHP;
     public int ExpReward => data.expReward;
     protected bool isDead;
 
