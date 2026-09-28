@@ -141,6 +141,7 @@ public static class RPGWorldBuilder
         GameObject whirlFxPrefab = BuildEffectPrefab("FX_Whirlwind", NumberedFrames(WhirlFxFrames, 1, 10), 18f, 2.8f);
         GameObject swordWavePrefab = BuildSwordWavePrefab();
         GameObject shopNpcPrefab = BuildShopNpcPrefab();
+        GameObject questNpcPrefab = BuildQuestNpcPrefab();
 
         // 2) 씬
         GameObject[] roots = scene.GetRootGameObjects();
@@ -225,6 +226,21 @@ public static class RPGWorldBuilder
                 "Item_SmallPotion", "Item_LargePotion", "Item_BronzeSword", "Item_IronSword", "Item_LeatherArmor", "Item_ChainMail");
             PlaceShop(shopNpcPrefab, field2.transform, "Shop_Field2", AreaSpacing * 2f - 9f, "Field 2 Shop", shopWindow,
                 "Item_SmallPotion", "Item_LargePotion", "Item_SteelSword", "Item_KnightSword", "Item_PlateArmor", "Item_KnightArmor");
+
+            // 메인 퀘스트: 필드1 Chief가 1~6번을 주고, 6번(Fire Worm)은 필드2 Guard에게 보고한다.
+            string[] chain =
+            {
+                "Quest_01_SlimeTrouble", "Quest_02_GearUp", "Quest_03_Pests", "Quest_04_Mushrooms", "Quest_05_ReadyForTheNest",
+                "Quest_06_FireWorm", "Quest_07_GoblinsAndMimics", "Quest_08_BonesAndEyes", "Quest_09_ReadyForTheGolem",
+            };
+            PlayerQuests quests = SetupPlayerQuests(player, inventory, chain);
+            BuildQuestTracker(hudPanel, quests);
+            QuestDialogWindow dialog = BuildQuestDialog(hudPanel, quests, player.GetComponent<PlayerController>());
+
+            PlaceQuestNpc(questNpcPrefab, field1.transform, "QuestNPC_Chief", 2.5f, "Chief", dialog,
+                chain.Take(6).ToArray(), chain.Take(5).ToArray());
+            PlaceQuestNpc(questNpcPrefab, field2.transform, "QuestNPC_Guard", AreaSpacing * 2f - 14f, "Guard", dialog,
+                chain.Skip(6).ToArray(), chain.Skip(5).ToArray());
         }
         else
         {
@@ -250,7 +266,7 @@ public static class RPGWorldBuilder
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
 
-        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리를 배치했습니다.");
+        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리, 퀘스트 NPC 2명을 배치했습니다.");
         Selection.activeGameObject = generated;
     }
 
@@ -606,6 +622,100 @@ public static class RPGWorldBuilder
     }
 
     // ── 인벤토리 · 상점 ─────────────────────────────────────────────
+
+    // ── 퀘스트 ─────────────────────────────────────────────────────
+
+    private static PlayerQuests SetupPlayerQuests(GameObject player, PlayerInventory inventory, string[] chain)
+    {
+        PlayerQuests quests = player.GetComponent<PlayerQuests>();
+        if (quests == null) quests = player.AddComponent<PlayerQuests>();
+
+        var so = new SerializedObject(quests);
+        so.FindProperty("player").objectReferenceValue = player.GetComponent<PlayerController>();
+        so.FindProperty("inventory").objectReferenceValue = inventory;
+        SetObjectArray(so.FindProperty("chain"), chain.Select(n => (Object)LoadData<QuestData>(n)).ToArray());
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return quests;
+    }
+
+    private static void PlaceQuestNpc(GameObject prefab, Transform parent, string objName, float x, string npcName,
+        QuestDialogWindow dialog, string[] offers, string[] completes)
+    {
+        var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+        go.name = objName;
+        go.transform.position = new Vector3(x, 0f, 0f);
+
+        QuestNPC npc = go.GetComponent<QuestNPC>();
+        var so = new SerializedObject(npc);
+        so.FindProperty("npcName").stringValue = npcName;
+        so.FindProperty("window").objectReferenceValue = dialog;
+        SetObjectArray(so.FindProperty("offers"), offers.Select(n => (Object)LoadData<QuestData>(n)).ToArray());
+        SetObjectArray(so.FindProperty("completes"), completes.Select(n => (Object)LoadData<QuestData>(n)).ToArray());
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        // 머리 위 이름표
+        Transform nameLabel = go.transform.Find("NameLabel");
+        if (nameLabel != null && nameLabel.TryGetComponent<TextMeshPro>(out var nameText)) nameText.text = $"{npcName}  [Up]";
+    }
+
+    private static void BuildQuestTracker(Transform hud, PlayerQuests quests)
+    {
+        DestroyChild(hud, "QuestTracker");
+
+        RectTransform panel = CreateRect(hud, "QuestTracker", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-20f, -90f), new Vector2(360f, 130f));
+        panel.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.45f);
+
+        TextMeshProUGUI title = CreateText(panel, "TitleText", "Quest", 19f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -6f), new Vector2(-20f, 24f), TextAlignmentOptions.TopLeft);
+        title.color = new Color(1f, 0.85f, 0.3f);
+        TextMeshProUGUI body = CreateText(panel, "BodyText", "", 15f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -34f), new Vector2(-20f, 90f), TextAlignmentOptions.TopLeft);
+
+        QuestTrackerHUD tracker = panel.gameObject.AddComponent<QuestTrackerHUD>();
+        var so = new SerializedObject(tracker);
+        so.FindProperty("quests").objectReferenceValue = quests;
+        so.FindProperty("titleText").objectReferenceValue = title;
+        so.FindProperty("bodyText").objectReferenceValue = body;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        SetUILayer(panel);
+    }
+
+    private static QuestDialogWindow BuildQuestDialog(Transform hud, PlayerQuests quests, PlayerController player)
+    {
+        DestroyChild(hud, "QuestDialog");
+
+        RectTransform root = CreateRect(hud, "QuestDialog", Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+        // 화면 가운데 아래(y -260)에 뜨는 UIManager 메시지와 겹치지 않게 가운데보다 위에 둔다.
+        RectTransform panel = CreateRect(root, "Content", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 140f), new Vector2(760f, 300f));
+        panel.gameObject.AddComponent<Image>().color = new Color(0.06f, 0.08f, 0.14f, 0.95f);
+
+        TextMeshProUGUI speaker = CreateText(panel, "SpeakerText", "", 22f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -10f), new Vector2(-40f, 28f), TextAlignmentOptions.TopLeft);
+        speaker.color = new Color(1f, 0.85f, 0.3f);
+        TextMeshProUGUI body = CreateText(panel, "BodyText", "", 17f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -44f), new Vector2(-40f, 200f), TextAlignmentOptions.TopLeft);
+
+        Button action = CreateButton(panel, "ActionButton", "OK", new Vector2(1f, 0f), new Vector2(-120f, 12f), new Vector2(120f, 36f));
+        Button close = CreateButton(panel, "CloseButton", "Close", new Vector2(1f, 0f), new Vector2(-12f, 12f), new Vector2(100f, 36f));
+
+        QuestDialogWindow window = root.gameObject.AddComponent<QuestDialogWindow>();
+        var so = new SerializedObject(window);
+        so.FindProperty("quests").objectReferenceValue = quests;
+        so.FindProperty("player").objectReferenceValue = player;
+        so.FindProperty("content").objectReferenceValue = panel.gameObject;
+        so.FindProperty("speakerText").objectReferenceValue = speaker;
+        so.FindProperty("bodyText").objectReferenceValue = body;
+        so.FindProperty("actionButton").objectReferenceValue = action;
+        so.FindProperty("actionText").objectReferenceValue = action.GetComponentInChildren<TextMeshProUGUI>(true);
+        so.FindProperty("closeButton").objectReferenceValue = close;
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        panel.gameObject.SetActive(false);
+        SetUILayer(root);
+        return window;
+    }
 
     private static PlayerInventory SetupPlayerInventory(GameObject player)
     {
@@ -1039,6 +1149,38 @@ public static class RPGWorldBuilder
 
         go.AddComponent<ShopNPC>();
         return SavePrefab(go, "ShopNPC");
+    }
+
+    /// <summary>퀘스트 NPC. 에셋에 NPC 스프라이트가 없어서 Archer를 푸르게 칠해 상인과 구분한다.</summary>
+    private static GameObject BuildQuestNpcPrefab()
+    {
+        var go = new GameObject("QuestNPC");
+        AddAnimator(go, new[] { new ClipDef(AnimState.Idle, ShopkeeperIdle, 6f, true) }, 3);
+        go.GetComponent<SpriteRenderer>().color = new Color(0.6f, 0.8f, 1f);
+
+        TextMeshPro nameText = CreateWorldText(go.transform, "NameLabel", "NPC  [Up]", 3f, new Vector3(0f, 1.5f, 0f), new Color(0.6f, 0.85f, 1f));
+        TextMeshPro marker = CreateWorldText(go.transform, "Marker", "!", 6f, new Vector3(0f, 2.2f, 0f), new Color(1f, 0.85f, 0.3f));
+
+        QuestNPC npc = go.AddComponent<QuestNPC>();
+        var so = new SerializedObject(npc);
+        so.FindProperty("marker").objectReferenceValue = marker;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return SavePrefab(go, "QuestNPC");
+    }
+
+    private static TextMeshPro CreateWorldText(Transform parent, string objName, string text, float fontSize, Vector3 localPos, Color color)
+    {
+        var label = new GameObject(objName);
+        label.transform.SetParent(parent, false);
+        label.transform.localPosition = localPos;
+        TextMeshPro tmp = label.AddComponent<TextMeshPro>();
+        tmp.text = text;
+        tmp.fontSize = fontSize;
+        tmp.alignment = TextAlignmentOptions.Center;
+        tmp.color = color;
+        tmp.sortingOrder = 8;
+        tmp.rectTransform.sizeDelta = new Vector2(4f, 1f);
+        return tmp;
     }
 
     private static GameObject BuildSwordWavePrefab()

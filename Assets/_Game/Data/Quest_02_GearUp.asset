@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13f35adb3761458aa0f46b846c098b28, type: 3}
+  m_Name: Quest_02_GearUp
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
+  title: Gear Up
+  description: 'You will need a real weapon out there. Buy one at the shop and equip it (I key opens your bag).'
+  completionText: 'Now you look like an adventurer.'
+  giverName: Chief
+  reporterName: Chief
+  objectives:
+  - type: 2
+    targetEnemy: {fileID: 0}
+    count: 1
+    level: 1
+    itemType: 1
+    label: Equip a weapon
+  expReward: 30
+  goldReward: 60

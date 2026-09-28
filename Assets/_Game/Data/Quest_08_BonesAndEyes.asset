@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13f35adb3761458aa0f46b846c098b28, type: 3}
+  m_Name: Quest_08_BonesAndEyes
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
+  title: Bones and Eyes
+  description: 'Skeletons and flying eyes guard the way to the Golem. Break through them.'
+  completionText: 'The path is open.'
+  giverName: Guard
+  reporterName: Guard
+  objectives:
+  - type: 0
+    targetEnemy: {fileID: 11400000, guid: c4c15f7a5e5043a79a6d1a44a9e9f645, type: 2}
+    count: 4
+    level: 1
+    itemType: 0
+    label: Defeat Skeleton
+  - type: 0
+    targetEnemy: {fileID: 11400000, guid: bc16ba5ced9642678d2bfd860082e64f, type: 2}
+    count: 4
+    level: 1
+    itemType: 0
+    label: Defeat Flying eye
+  expReward: 260
+  goldReward: 220
