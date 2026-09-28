@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f7268f2fb5b6c4d9d79d4e9a08cb79, type: 3}
+  m_Name: BossStats_Golem
+  m_EditorClassIdentifier: Assembly-CSharp::BossStatsData
+  maxHP: 800
+  contactDamage: 26
+  expReward: 400
+  moveSpeed: 0.8
+  detectionRange: 12
+  contactDamageInterval: 1
+  displayName: Mecha-stone Golem
+  endsGame: 1
+  meleeRange: 2.0
+  meleeCooldown: 2.0
+  meleeHitDelay: 0.35
+  projectileDamage: 22
+  projectileSpeed: 7
+  rangedCooldown: 2.2
+  rangedMinDistance: 2.5
+  rangedFireDelay: 0.35
