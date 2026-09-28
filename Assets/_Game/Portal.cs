@@ -29,6 +29,8 @@ public class Portal : MonoBehaviour
     private Color openColor;
     private bool locked;
 
+    public bool IsLocked => locked;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
