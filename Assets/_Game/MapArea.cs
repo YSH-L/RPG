@@ -20,12 +20,18 @@ public class MapArea : MonoBehaviour
     [SerializeField] private MapArea retreatTo;
     [Tooltip("이 맵에 있는 동안 반복할 배경음악. MusicDirector가 튼다.")]
     [SerializeField] private AudioClip bgm;
+    [Tooltip("이 맵이 차지하는 월드 범위 (땅 왼쪽 끝~오른쪽 끝). 미니맵이 이 범위를 그린다.")]
+    [SerializeField] private Vector2 worldMin;
+    [SerializeField] private Vector2 worldMax;
 
     public string DisplayName => displayName;
     public BossController Boss => boss;
     public Transform SpawnPoint => spawnPoint;
     public MapArea RetreatTo => retreatTo;
     public AudioClip Bgm => bgm;
+    public Vector2 WorldMin => worldMin;
+    public Vector2 WorldMax => worldMax;
+    public bool ContainsX(float x) => x >= worldMin.x && x <= worldMax.x;
 
     /// <summary>플레이어가 포탈로 이 맵에 들어왔을 때. 구독했으면 OnDisable에서 해제한다.</summary>
     public static event Action<MapArea> OnEntered;

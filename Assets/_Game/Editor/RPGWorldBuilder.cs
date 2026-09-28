@@ -273,6 +273,9 @@ public static class RPGWorldBuilder
         Transform hudForSave = FindHudPanel(roots);
         if (hudForSave != null) BuildSaveIndicator(hudForSave, save);
 
+        // 미니맵 (왼쪽 위, M으로 켜고 끄기)
+        if (hudForSave != null) BuildMinimap(hudForSave, new[] { field1, boss1, field2, boss2 });
+
         // 7) 소리 — 몬스터·보스·스킬 소리는 각 에셋에 이미 들어 있다. 여기서는 씬 쪽만 잇는다.
         SetupAudio(player, roots, new[] { field1, boss1, field2, boss2 },
             new[] { "bgm_field1", "bgm_boss", "bgm_field2", "bgm_boss" });
@@ -281,8 +284,56 @@ public static class RPGWorldBuilder
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
 
-        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리, 퀘스트 NPC 2명, 저장 기능, 효과음·배경음악을 배치했습니다.");
+        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리, 퀘스트 NPC 2명, 저장 기능, 효과음·배경음악, 미니맵을 배치했습니다.");
         Selection.activeGameObject = generated;
+    }
+
+    // ── 미니맵 ────────────────────────────────────────────────────
+
+    private static void BuildMinimap(Transform hud, MapArea[] areas)
+    {
+        DestroyChild(hud, "Minimap");
+
+        // 스크립트는 항상 켜진 바깥 오브젝트에(M 키를 계속 받아야 한다), 지도 본체는 Content로 켜고 끈다.
+        RectTransform root = CreateRect(hud, "Minimap", Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+
+        // 왼쪽 위 레벨(y -40)·HP(y -140) 표시 아래
+        RectTransform panel = CreateRect(root, "Content", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(20f, -200f), new Vector2(320f, 110f));
+        panel.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.55f);
+
+        TextMeshProUGUI mapName = CreateText(panel, "MapNameText", "", 15f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -3f), new Vector2(-12f, 20f), TextAlignmentOptions.TopLeft);
+        mapName.color = new Color(0.85f, 0.9f, 1f);
+        CreateText(panel, "KeyHint", "[M]", 12f,
+            new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-6f, -4f), new Vector2(40f, 18f), TextAlignmentOptions.TopRight)
+            .color = new Color(1f, 1f, 1f, 0.5f);
+
+        RectTransform viewport = CreateRect(panel, "Viewport", Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+        viewport.offsetMin = new Vector2(8f, 6f);
+        viewport.offsetMax = new Vector2(-8f, -24f);
+
+        RectTransform ground = CreateRect(viewport, "GroundBar", Vector2.zero, new Vector2(1f, 0f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(0f, 3f));
+        ground.gameObject.AddComponent<Image>().color = new Color(0.6f, 0.5f, 0.35f, 0.9f);
+
+        RectTransform template = CreateRect(viewport, "MarkerTemplate", Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(8f, 8f));
+        Image markerImage = template.gameObject.AddComponent<Image>();
+        markerImage.raycastTarget = false;
+        template.gameObject.SetActive(false);
+
+        MinimapHUD minimap = root.gameObject.AddComponent<MinimapHUD>();
+        var so = new SerializedObject(minimap);
+        so.FindProperty("content").objectReferenceValue = panel.gameObject;
+        so.FindProperty("viewport").objectReferenceValue = viewport;
+        so.FindProperty("groundBar").objectReferenceValue = ground;
+        so.FindProperty("mapNameText").objectReferenceValue = mapName;
+        so.FindProperty("markerTemplate").objectReferenceValue = markerImage;
+        SetObjectArray(so.FindProperty("areas"), areas);
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        SetUILayer(root);
     }
 
     // ── 소리 ──────────────────────────────────────────────────────
@@ -422,6 +473,9 @@ public static class RPGWorldBuilder
         so.FindProperty("displayName").stringValue = displayName;
         so.FindProperty("cameraMin").vector2Value = camMin + new Vector2(dx, 0f);
         so.FindProperty("cameraMax").vector2Value = camMax + new Vector2(dx, 0f);
+        // 미니맵이 그릴 범위: 땅 양 끝, 발밑 조금 아래 ~ 보스 머리 위
+        so.FindProperty("worldMin").vector2Value = new Vector2(groundLeft + dx, -1f);
+        so.FindProperty("worldMax").vector2Value = new Vector2(groundRight + dx, 4f);
         so.ApplyModifiedPropertiesWithoutUndo();
 
         return mapArea;
