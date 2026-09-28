@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 보스의 파이어볼 같은 원거리 투사체. ObjectPool로 재사용한다.
+/// 보스의 파이어볼, 플레이어의 검기 같은 원거리 투사체. targetMask로 누구를 맞힐지 정한다. ObjectPool로 재사용한다.
 /// </summary>
 public class Projectile : MonoBehaviour
 {
@@ -13,10 +13,13 @@ public class Projectile : MonoBehaviour
     private int damage;
     private ObjectPool pool;
     private float timer;
+    private float activeLifetime;
 
-    /// <param name="pool">이 투사체를 반납할 풀.</param>
-    public void Launch(Vector2 dir, int dmg, float projectileSpeed, ObjectPool sourcePool)
+    /// <param name="sourcePool">이 투사체를 반납할 풀.</param>
+    /// <param name="maxDistance">0보다 크면 이 거리만큼 날아간 뒤 사라진다. 0이면 프리팹의 lifetime을 쓴다.</param>
+    public void Launch(Vector2 dir, int dmg, float projectileSpeed, ObjectPool sourcePool, float maxDistance = 0f)
     {
+        activeLifetime = maxDistance > 0f && projectileSpeed > 0f ? maxDistance / projectileSpeed : lifetime;
         direction = dir.sqrMagnitude > 0.0001f ? dir.normalized : Vector2.right;
         damage = dmg;
         speed = projectileSpeed;
@@ -30,6 +33,7 @@ public class Projectile : MonoBehaviour
     private void OnEnable()
     {
         timer = 0f;
+        activeLifetime = lifetime;
     }
 
     private void Update()
@@ -37,7 +41,7 @@ public class Projectile : MonoBehaviour
         transform.Translate(direction * speed * Time.deltaTime, Space.World);
 
         timer += Time.deltaTime;
-        if (timer >= lifetime) Release();
+        if (timer >= activeLifetime) Release();
     }
 
     private void OnTriggerEnter2D(Collider2D other)

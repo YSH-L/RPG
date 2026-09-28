@@ -3,8 +3,8 @@ guid: 96796d3fea2f4ee4e8b25550be741ed3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8135147891610450527
-    second: Slash2_color5_frame2_0
+      213: -6551057243503630638
+    second: Slash2_color5_frame2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,25 +113,25 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Slash2_color5_frame2_0
+      name: Slash2_color5_frame2
       rect:
         serializedVersion: 2
-        x: 14
-        y: 4
-        width: 80
-        height: 33
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f5a75b2d7e9d5e070800000000000000
-      internalID: 8135147891610450527
+      spriteID: d266b76125f815a5ccf32001f0b6036e
+      internalID: -6551057243503630638
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Slash2_color5_frame2_0: 8135147891610450527
+      Slash2_color5_frame2: -6551057243503630638
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
