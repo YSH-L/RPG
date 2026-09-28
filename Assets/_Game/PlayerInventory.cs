@@ -16,6 +16,12 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private ItemData[] quickSlots = new ItemData[2];
     [SerializeField, Min(0)] private int startingGold = 0;
 
+    [Header("소리")]
+    [SerializeField] private AudioClip coinSound;
+    [SerializeField] private AudioClip buySound;
+    [SerializeField] private AudioClip potionSound;
+    [SerializeField] private AudioClip equipSound;
+
     public int Gold { get; private set; }
     public ItemData EquippedWeapon { get; private set; }
     public ItemData EquippedArmor { get; private set; }
@@ -66,6 +72,7 @@ public class PlayerInventory : MonoBehaviour
     {
         if (amount <= 0) return;
         Gold += amount;
+        Sfx.Play(coinSound, 0.4f);
         OnChanged?.Invoke();
     }
 
@@ -99,6 +106,7 @@ public class PlayerInventory : MonoBehaviour
         }
 
         Gold -= item.price;
+        Sfx.Play(buySound);
         AddItem(item);   // OnChanged는 여기서 한 번 나간다
         ShowMessage($"Bought {item.displayName}");
         return true;
@@ -121,12 +129,34 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
 
+        Sfx.Play(potionSound);
         counts[item]--;
         if (counts[item] <= 0)
         {
             counts.Remove(item);
             order.Remove(item);
         }
+        OnChanged?.Invoke();
+    }
+
+    /// <summary>저장에서 불러온 상태로 통째로 바꾼다. 장비 보너스도 다시 적용한다.</summary>
+    public void RestoreState(int gold, IEnumerable<KeyValuePair<ItemData, int>> items, ItemData weapon, ItemData armor)
+    {
+        Gold = Mathf.Max(0, gold);
+        counts.Clear();
+        order.Clear();
+        foreach (KeyValuePair<ItemData, int> pair in items)
+        {
+            if (pair.Key == null || pair.Value <= 0) continue;
+            if (!counts.ContainsKey(pair.Key)) order.Add(pair.Key);
+            counts[pair.Key] = pair.Value;
+        }
+
+        // 가진 장비만 낄 수 있다.
+        EquippedWeapon = weapon != null && CountOf(weapon) > 0 ? weapon : null;
+        EquippedArmor = armor != null && CountOf(armor) > 0 ? armor : null;
+
+        ApplyEquipment();
         OnChanged?.Invoke();
     }
 
@@ -138,6 +168,7 @@ public class PlayerInventory : MonoBehaviour
         if (item.type == ItemType.Weapon) EquippedWeapon = item;
         else EquippedArmor = item;
 
+        Sfx.Play(equipSound);
         ApplyEquipment();
         OnChanged?.Invoke();
     }

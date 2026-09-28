@@ -22,6 +22,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     /// <summary>종류 판별용 (퀘스트의 "Slime 5마리" 같은 조건이 이 에셋으로 비교한다).</summary>
     public EnemyStatsData Data => data;
     protected bool isDead;
+    public bool IsDead => isDead;
 
     /// <summary>스포너가 풀에서 꺼낼 때 불러준다. 프리팹은 씬의 풀을 참조할 수 없어서다.</summary>
     public void SetPool(ObjectPool sourcePool) => pool = sourcePool;
@@ -52,6 +53,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
         }
         else
         {
+            Sfx.Play(data.hitSound, 0.7f);
             animator.Play(AnimState.Hit);
         }
     }
@@ -59,6 +61,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable
     protected virtual void Die()
     {
         isDead = true;
+        Sfx.Play(data.deathSound);
         CombatEvents.RaiseDied(gameObject);
         animator.Play(AnimState.Death, force: true);
     }

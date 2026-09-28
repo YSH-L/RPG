@@ -60,10 +60,13 @@ public class PlayerSkills : MonoBehaviour
 
     private void HandleLevelChanged(int level)
     {
+        // 저장을 불러오며 레벨이 바뀐 경우(Ready 상태)는 알리지 않는다.
+        bool playing = GameManager.Instance != null && GameManager.Instance.IsPlaying;
+
         for (int i = 0; i < slots.Length; i++)
         {
             SkillData skill = GetSkill(i);
-            if (skill != null && lastLevel < skill.unlockLevel && skill.unlockLevel <= level)
+            if (playing && skill != null && lastLevel < skill.unlockLevel && skill.unlockLevel <= level)
             {
                 StartCoroutine(ShowUnlockMessage(skill, i));
             }
@@ -111,6 +114,7 @@ public class PlayerSkills : MonoBehaviour
         }
 
         cooldowns[index] = skill.cooldown;
+        Sfx.Play(skill.castSound);
         Slot slot = slots[index];
 
         switch (skill.type)

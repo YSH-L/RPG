@@ -31,6 +31,7 @@ public static class RPGWorldBuilder
     private const string WhirlFxFrames = "Assets/Sprites/Skills/Warrior/VFX 1/Frames/warrior_skill1_frame";
     private const string WaveFrames = "Assets/Sprites/Skills/Frost Knight/VFX1/frames/FrostKnight_skill1_frame";
     private const string ShopkeeperIdle = "Assets/Sprites/Character/Archer/Archer-Idle-spritesheet.png";
+    private const string AudioDir = "Assets/Audio/";
 
     private const int LayerDefault = 0;
     private const int LayerPlayer = 9;
@@ -262,12 +263,178 @@ public static class RPGWorldBuilder
         // 보스맵2 → 필드2 (되돌아가기)
         PlacePortal(portalPrefab, boss2.transform, "Portal_BackToField2", leftX + AreaSpacing * 3f, field2, rightX + AreaSpacing * 2f - 1.5f, 0, null, cameraFollow);
 
+        // 6) 저장 — 불러올 때 설 자리. 보스맵에서 저장됐으면 그 앞 필드에서 시작한다.
+        SetAreaSpawn(field1, player.transform.position, null);
+        SetAreaSpawn(boss1, new Vector3(leftX + AreaSpacing * 1f + 1.5f, 0.05f, 0f), field1);
+        SetAreaSpawn(field2, new Vector3(leftX + AreaSpacing * 2f + 1.5f, 0.05f, 0f), null);
+        SetAreaSpawn(boss2, new Vector3(leftX + AreaSpacing * 3f + 1.5f, 0.05f, 0f), field2);
+
+        PlayerSave save = SetupPlayerSave(player, cameraFollow, new[] { field1, boss1, field2, boss2 }, new[] { worm, golem });
+        Transform hudForSave = FindHudPanel(roots);
+        if (hudForSave != null) BuildSaveIndicator(hudForSave, save);
+
+        // 미니맵 (왼쪽 위, M으로 켜고 끄기)
+        if (hudForSave != null) BuildMinimap(hudForSave, new[] { field1, boss1, field2, boss2 });
+
+        // 7) 소리 — 몬스터·보스·스킬 소리는 각 에셋에 이미 들어 있다. 여기서는 씬 쪽만 잇는다.
+        SetupAudio(player, roots, new[] { field1, boss1, field2, boss2 },
+            new[] { "bgm_field1", "bgm_boss", "bgm_field2", "bgm_boss" });
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
 
-        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리, 퀘스트 NPC 2명을 배치했습니다.");
+        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리, 퀘스트 NPC 2명, 저장 기능, 효과음·배경음악, 미니맵을 배치했습니다.");
         Selection.activeGameObject = generated;
+    }
+
+    // ── 미니맵 ────────────────────────────────────────────────────
+
+    private static void BuildMinimap(Transform hud, MapArea[] areas)
+    {
+        DestroyChild(hud, "Minimap");
+
+        // 스크립트는 항상 켜진 바깥 오브젝트에(M 키를 계속 받아야 한다), 지도 본체는 Content로 켜고 끈다.
+        RectTransform root = CreateRect(hud, "Minimap", Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+
+        // 왼쪽 위 레벨(y -40)·HP(y -140) 표시 아래
+        RectTransform panel = CreateRect(root, "Content", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(20f, -200f), new Vector2(320f, 110f));
+        panel.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.55f);
+
+        TextMeshProUGUI mapName = CreateText(panel, "MapNameText", "", 15f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -3f), new Vector2(-12f, 20f), TextAlignmentOptions.TopLeft);
+        mapName.color = new Color(0.85f, 0.9f, 1f);
+        CreateText(panel, "KeyHint", "[M]", 12f,
+            new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-6f, -4f), new Vector2(40f, 18f), TextAlignmentOptions.TopRight)
+            .color = new Color(1f, 1f, 1f, 0.5f);
+
+        RectTransform viewport = CreateRect(panel, "Viewport", Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+        viewport.offsetMin = new Vector2(8f, 6f);
+        viewport.offsetMax = new Vector2(-8f, -24f);
+
+        RectTransform ground = CreateRect(viewport, "GroundBar", Vector2.zero, new Vector2(1f, 0f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(0f, 3f));
+        ground.gameObject.AddComponent<Image>().color = new Color(0.6f, 0.5f, 0.35f, 0.9f);
+
+        RectTransform template = CreateRect(viewport, "MarkerTemplate", Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(8f, 8f));
+        Image markerImage = template.gameObject.AddComponent<Image>();
+        markerImage.raycastTarget = false;
+        template.gameObject.SetActive(false);
+
+        MinimapHUD minimap = root.gameObject.AddComponent<MinimapHUD>();
+        var so = new SerializedObject(minimap);
+        so.FindProperty("content").objectReferenceValue = panel.gameObject;
+        so.FindProperty("viewport").objectReferenceValue = viewport;
+        so.FindProperty("groundBar").objectReferenceValue = ground;
+        so.FindProperty("mapNameText").objectReferenceValue = mapName;
+        so.FindProperty("markerTemplate").objectReferenceValue = markerImage;
+        SetObjectArray(so.FindProperty("areas"), areas);
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        SetUILayer(root);
+    }
+
+    // ── 소리 ──────────────────────────────────────────────────────
+
+    private static void SetupAudio(GameObject player, GameObject[] roots, MapArea[] areas, string[] bgms)
+    {
+        SetClips(player.GetComponent<PlayerController>(),
+            ("attackSound", "sfx_swing"), ("hurtSound", "sfx_player_hurt"), ("levelUpSound", "sfx_level_up"));
+        SetClips(player.GetComponent<PlayerInventory>(),
+            ("coinSound", "sfx_coin"), ("buySound", "sfx_buy"), ("potionSound", "sfx_potion"), ("equipSound", "sfx_equip"));
+        SetClips(player.GetComponent<PlayerQuests>(),
+            ("acceptSound", "sfx_quest_accept"), ("completeSound", "sfx_quest_complete"));
+
+        for (int i = 0; i < areas.Length; i++) SetClips(areas[i], ("bgm", bgms[i]));
+
+        GameObject managers = roots.FirstOrDefault(r => r.name == "Managers");
+        if (managers == null)
+        {
+            Debug.LogError("[RPGWorldBuilder] Managers 오브젝트를 찾지 못해 배경음악(MusicDirector)을 연결하지 않았습니다.");
+            return;
+        }
+        MusicDirector music = managers.GetComponent<MusicDirector>();
+        if (music == null) music = managers.AddComponent<MusicDirector>();
+        var so = new SerializedObject(music);
+        so.FindProperty("startArea").objectReferenceValue = areas[0];
+        so.ApplyModifiedPropertiesWithoutUndo();
+        SetClips(music, ("victoryJingle", "jingle_victory"), ("defeatJingle", "jingle_defeat"));
+    }
+
+    private static void SetClips(Component target, params (string field, string clip)[] pairs)
+    {
+        if (target == null) return;
+        var so = new SerializedObject(target);
+        foreach (var (field, clip) in pairs) so.FindProperty(field).objectReferenceValue = LoadClip(clip);
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static AudioClip LoadClip(string fileName)
+    {
+        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(AudioDir + fileName + ".wav");
+        if (clip == null) Debug.LogError($"[RPGWorldBuilder] 소리 파일 없음: {AudioDir}{fileName}.wav");
+        return clip;
+    }
+
+    [MenuItem("RPG/Delete Save Data")]
+    public static void DeleteSaveData()
+    {
+        PlayerSave.DeleteSaveFile();
+        Debug.Log($"[RPGWorldBuilder] 저장 파일을 지웠습니다: {PlayerSave.SavePath}");
+    }
+
+    // ── 저장 ──────────────────────────────────────────────────────
+
+    private static void SetAreaSpawn(MapArea area, Vector3 position, MapArea retreatTo)
+    {
+        var point = new GameObject("SpawnPoint");
+        point.transform.SetParent(area.transform, false);
+        point.transform.position = position;
+
+        var so = new SerializedObject(area);
+        so.FindProperty("spawnPoint").objectReferenceValue = point.transform;
+        so.FindProperty("retreatTo").objectReferenceValue = retreatTo;
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static PlayerSave SetupPlayerSave(GameObject player, CameraFollow2D cameraFollow, MapArea[] areas, BossController[] bosses)
+    {
+        PlayerSave save = player.GetComponent<PlayerSave>();
+        if (save == null) save = player.AddComponent<PlayerSave>();
+
+        // _Game/Data 안의 아이템 에셋 전부. 저장 파일의 이름을 에셋으로 되돌릴 때 쓴다.
+        Object[] items = AssetDatabase.FindAssets("t:ItemData", new[] { DataDir })
+            .Select(guid => (Object)AssetDatabase.LoadAssetAtPath<ItemData>(AssetDatabase.GUIDToAssetPath(guid)))
+            .ToArray();
+
+        var so = new SerializedObject(save);
+        so.FindProperty("player").objectReferenceValue = player.GetComponent<PlayerController>();
+        so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+        so.FindProperty("quests").objectReferenceValue = player.GetComponent<PlayerQuests>();
+        so.FindProperty("cameraFollow").objectReferenceValue = cameraFollow;
+        SetObjectArray(so.FindProperty("areas"), areas);
+        SetObjectArray(so.FindProperty("bosses"), bosses);
+        SetObjectArray(so.FindProperty("itemCatalog"), items);
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return save;
+    }
+
+    private static void BuildSaveIndicator(Transform hud, PlayerSave save)
+    {
+        DestroyChild(hud, "SaveIndicator");
+
+        TextMeshProUGUI text = CreateText(hud, "SaveIndicator", "", 18f,
+            new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 20f), new Vector2(200f, 26f), TextAlignmentOptions.BottomRight);
+        text.color = new Color(0.7f, 1f, 0.7f);
+
+        SaveIndicatorHUD indicator = text.gameObject.AddComponent<SaveIndicatorHUD>();
+        var so = new SerializedObject(indicator);
+        so.FindProperty("save").objectReferenceValue = save;
+        so.FindProperty("text").objectReferenceValue = text;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        text.gameObject.layer = 5;   // UI
     }
 
     // ── 맵 ────────────────────────────────────────────────────────
@@ -306,6 +473,9 @@ public static class RPGWorldBuilder
         so.FindProperty("displayName").stringValue = displayName;
         so.FindProperty("cameraMin").vector2Value = camMin + new Vector2(dx, 0f);
         so.FindProperty("cameraMax").vector2Value = camMax + new Vector2(dx, 0f);
+        // 미니맵이 그릴 범위: 땅 양 끝, 발밑 조금 아래 ~ 보스 머리 위
+        so.FindProperty("worldMin").vector2Value = new Vector2(groundLeft + dx, -1f);
+        so.FindProperty("worldMax").vector2Value = new Vector2(groundRight + dx, 4f);
         so.ApplyModifiedPropertiesWithoutUndo();
 
         return mapArea;
@@ -1099,7 +1269,10 @@ public static class RPGWorldBuilder
         FillClip(clips.GetArrayElementAtIndex(0), AnimState.Idle, frames, 10f, true);
         so.ApplyModifiedPropertiesWithoutUndo();
 
-        go.AddComponent<Portal>();
+        Portal portal = go.AddComponent<Portal>();
+        var portalSo = new SerializedObject(portal);
+        portalSo.FindProperty("enterSound").objectReferenceValue = LoadClip("sfx_portal");
+        portalSo.ApplyModifiedPropertiesWithoutUndo();
         return SavePrefab(go, "Portal");
     }
 

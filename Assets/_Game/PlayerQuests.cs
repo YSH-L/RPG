@@ -13,6 +13,10 @@ public class PlayerQuests : MonoBehaviour
     [Tooltip("메인 퀘스트 순서.")]
     [SerializeField] private QuestData[] chain;
 
+    [Header("소리")]
+    [SerializeField] private AudioClip acceptSound;
+    [SerializeField] private AudioClip completeSound;
+
     public QuestData CurrentQuest => chain != null && currentIndex < chain.Length ? chain[currentIndex] : null;
     public bool IsAccepted { get; private set; }
     public bool AllDone => CurrentQuest == null;
@@ -40,11 +44,30 @@ public class PlayerQuests : MonoBehaviour
         if (inventory != null) inventory.OnChanged -= HandleStateChanged;
     }
 
+    public int CurrentIndex => currentIndex;
+    public int[] GetKillCounts() => (int[])kills.Clone();
+
+    /// <summary>저장에서 불러온 진행 상태로 되돌린다. 메시지는 띄우지 않는다.</summary>
+    public void RestoreState(int index, bool accepted, int[] killCounts)
+    {
+        currentIndex = Mathf.Clamp(index, 0, chain != null ? chain.Length : 0);
+        IsAccepted = accepted && CurrentQuest != null;
+        kills = new int[IsAccepted ? CurrentQuest.objectives.Length : 0];
+        if (killCounts != null)
+        {
+            for (int i = 0; i < kills.Length && i < killCounts.Length; i++) kills[i] = killCounts[i];
+        }
+
+        wasReady = IsReadyToReport;
+        OnChanged?.Invoke();
+    }
+
     public void Accept()
     {
         if (CurrentQuest == null || IsAccepted) return;
 
         IsAccepted = true;
+        Sfx.Play(acceptSound);
         kills = new int[CurrentQuest.objectives.Length];
         wasReady = false;
         ShowMessage($"Quest accepted: {CurrentQuest.title}");
@@ -57,6 +80,7 @@ public class PlayerQuests : MonoBehaviour
         if (!IsReadyToReport) return false;
 
         QuestData done = CurrentQuest;
+        Sfx.Play(completeSound);
         currentIndex++;
         IsAccepted = false;
         kills = new int[0];
