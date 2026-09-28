@@ -11,6 +11,8 @@ public class EnemyStatsData : ScriptableObject
     public int maxHP = 50;
     public int contactDamage = 10;
     public int expReward = 10;
+    [Tooltip("처치하면 바로 들어오는 골드.")]
+    public int goldReward = 5;
 
     [Header("이동/탐지")]
     public float moveSpeed = 1.5f;

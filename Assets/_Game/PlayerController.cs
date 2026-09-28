@@ -26,10 +26,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     public int CurrentLevel { get; private set; } = 1;
     public int CurrentExp { get; private set; }
     public int CurrentHP { get; private set; }
-    public int MaxHP => data.GetMaxHP(CurrentLevel);
+    public int MaxHP => data.GetMaxHP(CurrentLevel) + bonusMaxHP;
     public int ExpToNextLevel => CurrentLevel >= data.maxLevel ? 0 : data.GetExpToNextLevel(CurrentLevel);
     public bool IsDead { get; private set; }
-    public int AttackPower => data.GetAttackPower(CurrentLevel);
+    public int AttackPower => data.GetAttackPower(CurrentLevel) + bonusAttack;
+    public int Defense => data.GetDefense(CurrentLevel) + bonusDefense;
     /// <summary>바라보는 방향. 오른쪽 1, 왼쪽 -1.</summary>
     public float FacingSign => facingSign;
     /// <summary>켜져 있으면 이동·점프·기본 공격 입력을 받지 않는다. 돌진 같은 스킬이 몸을 직접 움직이는 동안 켠다.</summary>
@@ -45,6 +46,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private float facingSign = 1f;
+    // 착용 장비 합계. PlayerInventory가 SetEquipmentBonus로 넣어준다.
+    private int bonusAttack;
+    private int bonusDefense;
+    private int bonusMaxHP;
     private float attackCooldownTimer;
     private float invulnerableTimer;
     private bool ignoreJumpThisFrame;
@@ -141,7 +146,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         Vector2 origin = (Vector2)transform.position + new Vector2(data.attackRange * 0.5f * facingSign, 0f);
         Collider2D[] hits = Physics2D.OverlapCircleAll(origin, data.attackRange * 0.5f, enemyMask);
-        int damage = data.GetAttackPower(CurrentLevel);
+        int damage = AttackPower;
 
         foreach (Collider2D hit in hits)
         {
@@ -176,6 +181,33 @@ public class PlayerController : MonoBehaviour, IDamageable
         OnExpChanged?.Invoke(CurrentExp, ExpToNextLevel);
     }
 
+    /// <summary>
+    /// 장비 보너스를 통째로 바꾼다. 최대 HP가 늘면 늘어난 만큼 현재 HP도 채우고, 줄면 최대치에 맞춰 깎는다.
+    /// </summary>
+    public void SetEquipmentBonus(int attack, int defense, int maxHP)
+    {
+        int oldMax = MaxHP;
+        bonusAttack = attack;
+        bonusDefense = defense;
+        bonusMaxHP = maxHP;
+
+        if (!IsDead)
+        {
+            CurrentHP = Mathf.Clamp(CurrentHP + Mathf.Max(0, MaxHP - oldMax), 1, MaxHP);
+        }
+        OnHPChanged?.Invoke(CurrentHP, MaxHP);
+    }
+
+    /// <summary>HP를 회복한다. 죽었거나 이미 가득 차 있으면 false (물약을 낭비하지 않게).</summary>
+    public bool Heal(int amount)
+    {
+        if (IsDead || amount <= 0 || CurrentHP >= MaxHP) return false;
+
+        CurrentHP = Mathf.Min(MaxHP, CurrentHP + amount);
+        OnHPChanged?.Invoke(CurrentHP, MaxHP);
+        return true;
+    }
+
     /// <summary>최소 seconds 동안 피해를 받지 않는다. 이미 더 긴 무적이 걸려 있으면 그대로 둔다.</summary>
     public void GrantInvulnerability(float seconds)
     {
@@ -186,7 +218,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (IsDead || invulnerableTimer > 0f || amount <= 0) return;
 
-        int defense = data.GetDefense(CurrentLevel);
+        int defense = Defense;
         int actual = Mathf.Max(1, amount - defense);
         CurrentHP = Mathf.Max(0, CurrentHP - actual);
 

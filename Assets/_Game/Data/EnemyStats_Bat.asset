@@ -15,6 +15,7 @@ MonoBehaviour:
   maxHP: 25
   contactDamage: 6
   expReward: 10
+  goldReward: 8
   moveSpeed: 1.8
   detectionRange: 5
   contactDamageInterval: 1
