@@ -30,6 +30,7 @@ public static class RPGWorldBuilder
     private const string DashFxFrames = "Assets/Sprites/Skills/Slash/128x128/Slash 2/color5/Frames/Slash2_color5_frame";
     private const string WhirlFxFrames = "Assets/Sprites/Skills/Warrior/VFX 1/Frames/warrior_skill1_frame";
     private const string WaveFrames = "Assets/Sprites/Skills/Frost Knight/VFX1/frames/FrostKnight_skill1_frame";
+    private const string ShopkeeperIdle = "Assets/Sprites/Character/Archer/Archer-Idle-spritesheet.png";
 
     private const int LayerDefault = 0;
     private const int LayerPlayer = 9;
@@ -111,7 +112,8 @@ public static class RPGWorldBuilder
         { "Goblin",    new[] { new Vector2(-4f, 0f), new Vector2(6f, 0f), new Vector2(16f, 0f) } },
         { "Skeleton",  new[] { new Vector2(2f, 0f), new Vector2(12f, 0f) } },
         { "FlyingEye", new[] { new Vector2(9f, 0.1f), new Vector2(18f, 0.1f) } },
-        { "Mimic",     new[] { new Vector2(-9f, 0f), new Vector2(21f, 0f) } },
+        // 도착 지점(-11.5) 옆에 상인이 서 있어서 왼쪽 끝은 비워 둔다.
+        { "Mimic",     new[] { new Vector2(4f, 0f), new Vector2(21f, 0f) } },
     };
 
     // ── 진입점 ─────────────────────────────────────────────────────
@@ -138,6 +140,7 @@ public static class RPGWorldBuilder
         GameObject dashFxPrefab = BuildEffectPrefab("FX_DashSlash", NumberedFrames(DashFxFrames, 1, 7), 18f, 1.5f);
         GameObject whirlFxPrefab = BuildEffectPrefab("FX_Whirlwind", NumberedFrames(WhirlFxFrames, 1, 10), 18f, 2.8f);
         GameObject swordWavePrefab = BuildSwordWavePrefab();
+        GameObject shopNpcPrefab = BuildShopNpcPrefab();
 
         // 2) 씬
         GameObject[] roots = scene.GetRootGameObjects();
@@ -208,6 +211,26 @@ public static class RPGWorldBuilder
         PlayerSkills skills = SetupPlayerSkills(player, dashFxPool, whirlFxPool, swordWavePool);
         BuildSkillHUD(roots, skills);
 
+        // 인벤토리 · 상점 · 퀵슬롯
+        PlayerInventory inventory = SetupPlayerInventory(player);
+        Transform hudPanel = FindHudPanel(roots);
+        if (hudPanel != null)
+        {
+            BuildQuickSlotHUD(hudPanel, inventory);
+            BuildInventoryWindow(hudPanel, inventory, player.GetComponent<PlayerController>());
+            ShopWindow shopWindow = BuildShopWindow(hudPanel, inventory, player.GetComponent<PlayerController>());
+
+            // 필드1은 초급, 필드2는 상급 장비를 판다. 물약은 둘 다.
+            PlaceShop(shopNpcPrefab, field1.transform, "Shop_Field1", -3f, "Field 1 Shop", shopWindow,
+                "Item_SmallPotion", "Item_LargePotion", "Item_BronzeSword", "Item_IronSword", "Item_LeatherArmor", "Item_ChainMail");
+            PlaceShop(shopNpcPrefab, field2.transform, "Shop_Field2", AreaSpacing * 2f - 9f, "Field 2 Shop", shopWindow,
+                "Item_SmallPotion", "Item_LargePotion", "Item_SteelSword", "Item_KnightSword", "Item_PlateArmor", "Item_KnightArmor");
+        }
+        else
+        {
+            Debug.LogError("[RPGWorldBuilder] Canvas/HUD_Panel을 찾지 못해 인벤토리·상점 UI를 만들지 않았습니다.");
+        }
+
         // 5) 포탈
         float leftX = groundLeft + 2.5f;
         float rightX = groundRight - 2.5f;
@@ -227,7 +250,7 @@ public static class RPGWorldBuilder
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
 
-        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개를 배치했습니다.");
+        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리를 배치했습니다.");
         Selection.activeGameObject = generated;
     }
 
@@ -582,6 +605,250 @@ public static class RPGWorldBuilder
         return tmp;
     }
 
+    // ── 인벤토리 · 상점 ─────────────────────────────────────────────
+
+    private static PlayerInventory SetupPlayerInventory(GameObject player)
+    {
+        PlayerInventory inventory = player.GetComponent<PlayerInventory>();
+        if (inventory == null) inventory = player.AddComponent<PlayerInventory>();
+
+        var so = new SerializedObject(inventory);
+        so.FindProperty("player").objectReferenceValue = player.GetComponent<PlayerController>();
+        so.FindProperty("startingGold").intValue = 50;
+        SerializedProperty slots = so.FindProperty("quickSlots");
+        slots.arraySize = 2;
+        slots.GetArrayElementAtIndex(0).objectReferenceValue = LoadData<ItemData>("Item_SmallPotion");
+        slots.GetArrayElementAtIndex(1).objectReferenceValue = LoadData<ItemData>("Item_LargePotion");
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return inventory;
+    }
+
+    private static void PlaceShop(GameObject prefab, Transform parent, string objName, float x, string shopName,
+        ShopWindow window, params string[] stockAssets)
+    {
+        var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+        go.name = objName;
+        go.transform.position = new Vector3(x, 0f, 0f);
+
+        ShopNPC npc = go.GetComponent<ShopNPC>();
+        var so = new SerializedObject(npc);
+        so.FindProperty("shopName").stringValue = shopName;
+        so.FindProperty("window").objectReferenceValue = window;
+        SerializedProperty stock = so.FindProperty("stock");
+        stock.arraySize = stockAssets.Length;
+        for (int i = 0; i < stockAssets.Length; i++)
+        {
+            stock.GetArrayElementAtIndex(i).objectReferenceValue = LoadData<ItemData>(stockAssets[i]);
+        }
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void BuildQuickSlotHUD(Transform hud, PlayerInventory inventory)
+    {
+        DestroyChild(hud, "QuickBar");
+
+        // 스킬 칸(가운데, 폭 260) 오른쪽에 붙인다.
+        RectTransform bar = CreateRect(hud, "QuickBar", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 0f),
+            new Vector2(160f, 20f), new Vector2(170f, 100f));
+
+        TextMeshProUGUI gold = CreateText(bar, "GoldText", "Gold 0", 18f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), Vector2.zero, new Vector2(0f, 20f), TextAlignmentOptions.Left);
+        gold.color = new Color(1f, 0.85f, 0.3f);
+
+        QuickSlotHUD quick = bar.gameObject.AddComponent<QuickSlotHUD>();
+        var so = new SerializedObject(quick);
+        so.FindProperty("inventory").objectReferenceValue = inventory;
+        so.FindProperty("goldText").objectReferenceValue = gold;
+        SerializedProperty views = so.FindProperty("views");
+        views.arraySize = 2;
+
+        for (int i = 0; i < 2; i++)
+        {
+            RectTransform slot = CreateRect(bar, "Slot_" + (i + 1), Vector2.zero, Vector2.zero, Vector2.zero,
+                new Vector2(i * 90f, 0f), new Vector2(80f, 80f));
+            slot.gameObject.AddComponent<Image>().color = new Color(0.25f, 0.15f, 0.15f, 0.9f);
+
+            RectTransform iconRt = CreateRect(slot, "Icon", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, new Vector2(48f, 48f));
+            Image icon = iconRt.gameObject.AddComponent<Image>();
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+
+            TextMeshProUGUI key = CreateText(slot, "KeyText", (i + 1).ToString(), 22f,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(6f, -4f), new Vector2(30f, 26f), TextAlignmentOptions.TopLeft);
+            TextMeshProUGUI count = CreateText(slot, "CountText", "0", 18f,
+                new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-6f, 4f), new Vector2(50f, 22f), TextAlignmentOptions.BottomRight);
+
+            SerializedProperty view = views.GetArrayElementAtIndex(i);
+            view.FindPropertyRelative("icon").objectReferenceValue = icon;
+            view.FindPropertyRelative("keyText").objectReferenceValue = key;
+            view.FindPropertyRelative("countText").objectReferenceValue = count;
+        }
+        so.ApplyModifiedPropertiesWithoutUndo();
+        SetUILayer(bar);
+    }
+
+    private static void BuildInventoryWindow(Transform hud, PlayerInventory inventory, PlayerController player)
+    {
+        DestroyChild(hud, "InventoryWindow");
+
+        // 스크립트는 항상 켜진 바깥 오브젝트에(I 키를 계속 받아야 한다), 창 본체는 Content로 켜고 끈다.
+        RectTransform root = CreateRect(hud, "InventoryWindow", Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+        const int rowCount = 10;
+        const float rowHeight = 44f;
+        float height = 110f + rowCount * rowHeight + 10f;
+
+        RectTransform panel = CreateRect(root, "Content", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
+            new Vector2(-20f, 0f), new Vector2(520f, height));
+        panel.gameObject.AddComponent<Image>().color = new Color(0.08f, 0.08f, 0.12f, 0.92f);
+
+        CreateText(panel, "TitleText", "Inventory  [I]", 24f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -8f), new Vector2(0f, 30f), TextAlignmentOptions.Center);
+        TextMeshProUGUI gold = CreateText(panel, "GoldText", "Gold 0", 18f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -40f), new Vector2(-24f, 22f), TextAlignmentOptions.Left);
+        gold.color = new Color(1f, 0.85f, 0.3f);
+        TextMeshProUGUI stats = CreateText(panel, "StatsText", "", 15f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -62f), new Vector2(-24f, 44f), TextAlignmentOptions.TopLeft);
+
+        ItemRowView[] rows = CreateRows(panel, rowCount, rowHeight, 110f);
+
+        InventoryWindow window = root.gameObject.AddComponent<InventoryWindow>();
+        var so = new SerializedObject(window);
+        so.FindProperty("inventory").objectReferenceValue = inventory;
+        so.FindProperty("player").objectReferenceValue = player;
+        so.FindProperty("content").objectReferenceValue = panel.gameObject;
+        so.FindProperty("goldText").objectReferenceValue = gold;
+        so.FindProperty("statsText").objectReferenceValue = stats;
+        SetObjectArray(so.FindProperty("rows"), rows);
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        panel.gameObject.SetActive(false);
+        SetUILayer(root);
+    }
+
+    private static ShopWindow BuildShopWindow(Transform hud, PlayerInventory inventory, PlayerController player)
+    {
+        DestroyChild(hud, "ShopWindow");
+
+        RectTransform root = CreateRect(hud, "ShopWindow", Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+        const int rowCount = 6;
+        const float rowHeight = 48f;
+        float height = 80f + rowCount * rowHeight + 10f;
+
+        RectTransform panel = CreateRect(root, "Content", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(560f, height));
+        panel.gameObject.AddComponent<Image>().color = new Color(0.12f, 0.09f, 0.06f, 0.95f);
+
+        TextMeshProUGUI title = CreateText(panel, "TitleText", "Shop", 24f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -8f), new Vector2(0f, 30f), TextAlignmentOptions.Center);
+        TextMeshProUGUI gold = CreateText(panel, "GoldText", "Gold 0", 18f,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -44f), new Vector2(-24f, 22f), TextAlignmentOptions.Left);
+        gold.color = new Color(1f, 0.85f, 0.3f);
+
+        Button close = CreateButton(panel, "CloseButton", "Close",
+            new Vector2(1f, 1f), new Vector2(-10f, -8f), new Vector2(90f, 30f));
+
+        ItemRowView[] rows = CreateRows(panel, rowCount, rowHeight, 80f);
+
+        ShopWindow window = root.gameObject.AddComponent<ShopWindow>();
+        var so = new SerializedObject(window);
+        so.FindProperty("inventory").objectReferenceValue = inventory;
+        so.FindProperty("player").objectReferenceValue = player;
+        so.FindProperty("content").objectReferenceValue = panel.gameObject;
+        so.FindProperty("titleText").objectReferenceValue = title;
+        so.FindProperty("goldText").objectReferenceValue = gold;
+        so.FindProperty("closeButton").objectReferenceValue = close;
+        SetObjectArray(so.FindProperty("rows"), rows);
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        panel.gameObject.SetActive(false);
+        SetUILayer(root);
+        return window;
+    }
+
+    /// <summary>아이콘 | 이름 / 설명 | 버튼 한 줄을 rowCount개 위에서부터 쌓는다.</summary>
+    private static ItemRowView[] CreateRows(RectTransform panel, int rowCount, float rowHeight, float top)
+    {
+        var rows = new ItemRowView[rowCount];
+        for (int i = 0; i < rowCount; i++)
+        {
+            RectTransform row = CreateRect(panel, "Row_" + i, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0f, -(top + i * rowHeight)), new Vector2(-20f, rowHeight - 4f));
+            row.gameObject.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0.06f);
+
+            RectTransform iconRt = CreateRect(row, "Icon", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
+                new Vector2(6f, 0f), new Vector2(rowHeight - 12f, rowHeight - 12f));
+            Image icon = iconRt.gameObject.AddComponent<Image>();
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+
+            TextMeshProUGUI name = CreateText(row, "NameText", "", 17f,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(rowHeight, -2f), new Vector2(300f, 22f), TextAlignmentOptions.TopLeft);
+            TextMeshProUGUI detail = CreateText(row, "DetailText", "", 13f,
+                new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(rowHeight, 2f), new Vector2(300f, 18f), TextAlignmentOptions.BottomLeft);
+            detail.color = new Color(0.75f, 0.85f, 1f);
+
+            Button button = CreateButton(row, "Button", "", new Vector2(1f, 0.5f), new Vector2(-6f, 0f), new Vector2(120f, rowHeight - 12f));
+
+            ItemRowView view = row.gameObject.AddComponent<ItemRowView>();
+            var so = new SerializedObject(view);
+            so.FindProperty("icon").objectReferenceValue = icon;
+            so.FindProperty("nameText").objectReferenceValue = name;
+            so.FindProperty("detailText").objectReferenceValue = detail;
+            so.FindProperty("button").objectReferenceValue = button;
+            so.FindProperty("buttonText").objectReferenceValue = button.GetComponentInChildren<TextMeshProUGUI>(true);
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            row.gameObject.SetActive(false);
+            rows[i] = view;
+        }
+        return rows;
+    }
+
+    /// <summary>anchor 한 점 기준으로 붙는 버튼 (pivot = anchor).</summary>
+    private static Button CreateButton(Transform parent, string objName, string label, Vector2 anchor, Vector2 position, Vector2 size)
+    {
+        RectTransform rt = CreateRect(parent, objName, anchor, anchor, anchor, position, size);
+        Image image = rt.gameObject.AddComponent<Image>();
+        image.color = new Color(0.3f, 0.45f, 0.75f, 1f);
+        Button button = rt.gameObject.AddComponent<Button>();
+        button.targetGraphic = image;
+
+        CreateText(rt, "Label", label, 16f, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, TextAlignmentOptions.Center);
+        return button;
+    }
+
+    private static RectTransform CreateRect(Transform parent, string objName, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
+        Vector2 position, Vector2 size)
+    {
+        var go = new GameObject(objName, typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = anchorMin;
+        rt.anchorMax = anchorMax;
+        rt.pivot = pivot;
+        rt.anchoredPosition = position;
+        rt.sizeDelta = size;
+        return rt;
+    }
+
+    private static void SetObjectArray(SerializedProperty array, Object[] values)
+    {
+        array.arraySize = values.Length;
+        for (int i = 0; i < values.Length; i++) array.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+    }
+
+    private static void DestroyChild(Transform parent, string childName)
+    {
+        Transform old = parent.Find(childName);
+        if (old != null) Object.DestroyImmediate(old.gameObject);
+    }
+
+    private static void SetUILayer(Transform root)
+    {
+        foreach (Transform t in root.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 5;   // UI
+    }
+
     private static Transform FindHudPanel(GameObject[] roots)
     {
         GameObject canvas = roots.FirstOrDefault(r => r.name == "Canvas");
@@ -751,6 +1018,27 @@ public static class RPGWorldBuilder
         effectSo.ApplyModifiedPropertiesWithoutUndo();
 
         return SavePrefab(go, prefabName);
+    }
+
+    /// <summary>상인. 에셋에 NPC 스프라이트가 없어서 Archer를 쓴다. 머리 위에 "Shop" 글자를 띄운다.</summary>
+    private static GameObject BuildShopNpcPrefab()
+    {
+        var go = new GameObject("ShopNPC");
+        AddAnimator(go, new[] { new ClipDef(AnimState.Idle, ShopkeeperIdle, 6f, true) }, 3);
+
+        var label = new GameObject("Label");
+        label.transform.SetParent(go.transform, false);
+        label.transform.localPosition = new Vector3(0f, 1.5f, 0f);
+        TextMeshPro text = label.AddComponent<TextMeshPro>();
+        text.text = "Shop  [Up]";
+        text.fontSize = 3f;
+        text.alignment = TextAlignmentOptions.Center;
+        text.color = new Color(1f, 0.85f, 0.3f);
+        text.sortingOrder = 8;
+        text.rectTransform.sizeDelta = new Vector2(4f, 1f);
+
+        go.AddComponent<ShopNPC>();
+        return SavePrefab(go, "ShopNPC");
     }
 
     private static GameObject BuildSwordWavePrefab()

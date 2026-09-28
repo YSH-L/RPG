@@ -64,7 +64,8 @@ public class Portal : MonoBehaviour
         if (GameManager.Instance == null || !GameManager.Instance.IsPlaying) return;
 
         PlayerController player = PlayerController.Instance;
-        if (player == null || player.IsDead) return;
+        // 상점 창이 열려 있거나 돌진 중일 때는 들어가지 않는다.
+        if (player == null || player.IsDead || player.ControlLocked) return;
 
         Keyboard kb = Keyboard.current;
         if (kb == null || !(kb.upArrowKey.wasPressedThisFrame || kb.wKey.wasPressedThisFrame)) return;
