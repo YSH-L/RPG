@@ -14,9 +14,15 @@ public class MapArea : MonoBehaviour
     [SerializeField] private Vector2 cameraMax;
     [Tooltip("보스맵이면 그 보스. 들어오면 화면 상단에 체력바가 뜬다. 필드는 비워둔다.")]
     [SerializeField] private BossController boss;
+    [Tooltip("저장을 불러왔을 때 플레이어가 설 자리 (발 위치).")]
+    [SerializeField] private Transform spawnPoint;
+    [Tooltip("보스맵이면 그 앞 필드. 저장을 불러올 때 보스맵 대신 여기서 시작한다.")]
+    [SerializeField] private MapArea retreatTo;
 
     public string DisplayName => displayName;
     public BossController Boss => boss;
+    public Transform SpawnPoint => spawnPoint;
+    public MapArea RetreatTo => retreatTo;
 
     /// <summary>플레이어가 포탈로 이 맵에 들어왔을 때. 구독했으면 OnDisable에서 해제한다.</summary>
     public static event Action<MapArea> OnEntered;

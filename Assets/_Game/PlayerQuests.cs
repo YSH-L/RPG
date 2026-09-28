@@ -40,6 +40,24 @@ public class PlayerQuests : MonoBehaviour
         if (inventory != null) inventory.OnChanged -= HandleStateChanged;
     }
 
+    public int CurrentIndex => currentIndex;
+    public int[] GetKillCounts() => (int[])kills.Clone();
+
+    /// <summary>저장에서 불러온 진행 상태로 되돌린다. 메시지는 띄우지 않는다.</summary>
+    public void RestoreState(int index, bool accepted, int[] killCounts)
+    {
+        currentIndex = Mathf.Clamp(index, 0, chain != null ? chain.Length : 0);
+        IsAccepted = accepted && CurrentQuest != null;
+        kills = new int[IsAccepted ? CurrentQuest.objectives.Length : 0];
+        if (killCounts != null)
+        {
+            for (int i = 0; i < kills.Length && i < killCounts.Length; i++) kills[i] = killCounts[i];
+        }
+
+        wasReady = IsReadyToReport;
+        OnChanged?.Invoke();
+    }
+
     public void Accept()
     {
         if (CurrentQuest == null || IsAccepted) return;

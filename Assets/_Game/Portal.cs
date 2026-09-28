@@ -61,6 +61,9 @@ public class Portal : MonoBehaviour
 
     private void Update()
     {
+        // 저장을 불러와 보스가 처음부터 꺼져 있으면 (이미 처치함) 조용히 연다.
+        if (locked && unlockOnDeath != null && !unlockOnDeath.gameObject.activeInHierarchy) SetLocked(false);
+
         if (GameManager.Instance == null || !GameManager.Instance.IsPlaying) return;
 
         PlayerController player = PlayerController.Instance;

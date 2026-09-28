@@ -262,12 +262,81 @@ public static class RPGWorldBuilder
         // 보스맵2 → 필드2 (되돌아가기)
         PlacePortal(portalPrefab, boss2.transform, "Portal_BackToField2", leftX + AreaSpacing * 3f, field2, rightX + AreaSpacing * 2f - 1.5f, 0, null, cameraFollow);
 
+        // 6) 저장 — 불러올 때 설 자리. 보스맵에서 저장됐으면 그 앞 필드에서 시작한다.
+        SetAreaSpawn(field1, player.transform.position, null);
+        SetAreaSpawn(boss1, new Vector3(leftX + AreaSpacing * 1f + 1.5f, 0.05f, 0f), field1);
+        SetAreaSpawn(field2, new Vector3(leftX + AreaSpacing * 2f + 1.5f, 0.05f, 0f), null);
+        SetAreaSpawn(boss2, new Vector3(leftX + AreaSpacing * 3f + 1.5f, 0.05f, 0f), field2);
+
+        PlayerSave save = SetupPlayerSave(player, cameraFollow, new[] { field1, boss1, field2, boss2 }, new[] { worm, golem });
+        Transform hudForSave = FindHudPanel(roots);
+        if (hudForSave != null) BuildSaveIndicator(hudForSave, save);
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
 
-        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리, 퀘스트 NPC 2명을 배치했습니다.");
+        Debug.Log("[RPGWorldBuilder] 완료: 일반 몬스터 8종, 보스 2종, 포탈 5개, 맵 4개, 보스 체력바, 플레이어 스킬 3개, 상점 2곳과 인벤토리, 퀘스트 NPC 2명, 저장 기능을 배치했습니다.");
         Selection.activeGameObject = generated;
+    }
+
+    [MenuItem("RPG/Delete Save Data")]
+    public static void DeleteSaveData()
+    {
+        PlayerSave.DeleteSaveFile();
+        Debug.Log($"[RPGWorldBuilder] 저장 파일을 지웠습니다: {PlayerSave.SavePath}");
+    }
+
+    // ── 저장 ──────────────────────────────────────────────────────
+
+    private static void SetAreaSpawn(MapArea area, Vector3 position, MapArea retreatTo)
+    {
+        var point = new GameObject("SpawnPoint");
+        point.transform.SetParent(area.transform, false);
+        point.transform.position = position;
+
+        var so = new SerializedObject(area);
+        so.FindProperty("spawnPoint").objectReferenceValue = point.transform;
+        so.FindProperty("retreatTo").objectReferenceValue = retreatTo;
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static PlayerSave SetupPlayerSave(GameObject player, CameraFollow2D cameraFollow, MapArea[] areas, BossController[] bosses)
+    {
+        PlayerSave save = player.GetComponent<PlayerSave>();
+        if (save == null) save = player.AddComponent<PlayerSave>();
+
+        // _Game/Data 안의 아이템 에셋 전부. 저장 파일의 이름을 에셋으로 되돌릴 때 쓴다.
+        Object[] items = AssetDatabase.FindAssets("t:ItemData", new[] { DataDir })
+            .Select(guid => (Object)AssetDatabase.LoadAssetAtPath<ItemData>(AssetDatabase.GUIDToAssetPath(guid)))
+            .ToArray();
+
+        var so = new SerializedObject(save);
+        so.FindProperty("player").objectReferenceValue = player.GetComponent<PlayerController>();
+        so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+        so.FindProperty("quests").objectReferenceValue = player.GetComponent<PlayerQuests>();
+        so.FindProperty("cameraFollow").objectReferenceValue = cameraFollow;
+        SetObjectArray(so.FindProperty("areas"), areas);
+        SetObjectArray(so.FindProperty("bosses"), bosses);
+        SetObjectArray(so.FindProperty("itemCatalog"), items);
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return save;
+    }
+
+    private static void BuildSaveIndicator(Transform hud, PlayerSave save)
+    {
+        DestroyChild(hud, "SaveIndicator");
+
+        TextMeshProUGUI text = CreateText(hud, "SaveIndicator", "", 18f,
+            new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 20f), new Vector2(200f, 26f), TextAlignmentOptions.BottomRight);
+        text.color = new Color(0.7f, 1f, 0.7f);
+
+        SaveIndicatorHUD indicator = text.gameObject.AddComponent<SaveIndicatorHUD>();
+        var so = new SerializedObject(indicator);
+        so.FindProperty("save").objectReferenceValue = save;
+        so.FindProperty("text").objectReferenceValue = text;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        text.gameObject.layer = 5;   // UI
     }
 
     // ── 맵 ────────────────────────────────────────────────────────
