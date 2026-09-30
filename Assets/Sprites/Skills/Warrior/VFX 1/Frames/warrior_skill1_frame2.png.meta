@@ -3,8 +3,8 @@ guid: 02c57b6cf96ab7449be0e1a850d5ae70
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4748155737248322998
-    second: warrior_skill1_frame2
+      213: 822879637270261129
+    second: warrior_skill1_frame2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,25 +113,25 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: warrior_skill1_frame2
+      name: warrior_skill1_frame2_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 128
-        height: 128
-      alignment: 9
-      pivot: {x: 0.5, y: 0.5}
+        x: 21
+        y: 9
+        width: 26
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 4aaa148783291bbefba6f921411afa9e
-      internalID: -4748155737248322998
+      spriteID: 98d65689ba47b6b00800000000000000
+      internalID: 822879637270261129
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     outline: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      warrior_skill1_frame2: -4748155737248322998
+      warrior_skill1_frame2_0: 822879637270261129
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -3,8 +3,11 @@ guid: 9b8f4e5892a69c143bb8d0ec70d3b4f4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1966651842182360808
-    second: Slash2_color5_frame6
+      213: -3273793148881188893
+    second: Slash2_color5_frame6_0
+  - first:
+      213: -5535569729378629716
+    second: Slash2_color5_frame6_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,25 +116,47 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Slash2_color5_frame6
+      name: Slash2_color5_frame6_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 128
-        height: 128
-      alignment: 9
-      pivot: {x: 0.5, y: 0.5}
+        x: 29
+        y: 62
+        width: 42
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e8ae25426ef34a1b8d2dab10d036faf5
-      internalID: 1966651842182360808
+      spriteID: 3e744d4f9762192d0800000000000000
+      internalID: -3273793148881188893
       vertices: []
-      indices:
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slash2_color5_frame6_1
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 50
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca74bfae8a4bd23b0800000000000000
+      internalID: -5535569729378629716
+      vertices: []
+      indices: 
       edges: []
       weights: []
     outline: []
@@ -148,7 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Slash2_color5_frame6: 1966651842182360808
+      Slash2_color5_frame6_0: -3273793148881188893
+      Slash2_color5_frame6_1: -5535569729378629716
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
