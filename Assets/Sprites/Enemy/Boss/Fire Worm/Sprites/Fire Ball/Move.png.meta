@@ -66,7 +66,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -124,137 +124,150 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Move_0
+      name: FireBall_Move_0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 16
-        width: 20
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 46
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 01feb0bb7a535f330800000000000000
-      internalID: 3743957659742367504
+      spriteID: be8cd5aed5ffd584287f2be4c871d2fc
+      internalID: 702467300
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_1
+      name: FireBall_Move_1
       rect:
         serializedVersion: 2
-        x: 61
-        y: 15
-        width: 17
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 46
+        y: 0
+        width: 46
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 399e0fb01a046a470800000000000000
-      internalID: 8405476814967859603
+      spriteID: d1614c50f12dfa646bf18f64d543bdd5
+      internalID: -1593968539
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_2
+      name: FireBall_Move_2
       rect:
         serializedVersion: 2
-        x: 107
-        y: 15
-        width: 17
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 92
+        y: 0
+        width: 46
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 14a8fd428130969b0800000000000000
-      internalID: -5086530901905536447
+      spriteID: 52c4e79464ebde24ebc788ebf06866ee
+      internalID: -2026087794
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_3
+      name: FireBall_Move_3
       rect:
         serializedVersion: 2
-        x: 151
-        y: 16
-        width: 19
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 138
+        y: 0
+        width: 46
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c8b489dd385fb1510800000000000000
-      internalID: 1521079245874940812
+      spriteID: 2416a220770aa2541ab9cf456e201e0a
+      internalID: 1418362542
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_4
+      name: FireBall_Move_4
       rect:
         serializedVersion: 2
-        x: 196
-        y: 16
-        width: 20
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 184
+        y: 0
+        width: 46
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7969a83223199a730800000000000000
-      internalID: 4010896587680814743
+      spriteID: b72fd02af2eaf5c48ae3468e030aaa33
+      internalID: 1835366312
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Move_5
+      name: FireBall_Move_5
       rect:
         serializedVersion: 2
-        x: 241
-        y: 16
-        width: 21
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 230
+        y: 0
+        width: 46
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fcab384b7aa8f8a70800000000000000
-      internalID: 8831429847189535439
+      spriteID: 777ac318c29a1124cbf769c04abbdbef
+      internalID: -1525307713
       vertices: []
       indices: 
       edges: []
@@ -263,7 +276,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: eb7eff9350dcd70408aeb2b2a47e8d20
     internalID: 0
     vertices: []
     indices: 
@@ -273,12 +286,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Move_0: 3743957659742367504
-      Move_1: 8405476814967859603
-      Move_2: -5086530901905536447
-      Move_3: 1521079245874940812
-      Move_4: 4010896587680814743
-      Move_5: 8831429847189535439
+      FireBall_Move_0: 702467300
+      FireBall_Move_1: -1593968539
+      FireBall_Move_2: -2026087794
+      FireBall_Move_3: 1418362542
+      FireBall_Move_4: 1835366312
+      FireBall_Move_5: -1525307713
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

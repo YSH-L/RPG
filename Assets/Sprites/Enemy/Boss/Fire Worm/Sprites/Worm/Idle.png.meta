@@ -81,7 +81,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -139,247 +139,216 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Idle_0
+      name: Worm_Idle_0
       rect:
         serializedVersion: 2
-        x: 16
-        y: 31
-        width: 53
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 54d7a982679db8140800000000000000
-      internalID: 4723107735738678597
+      spriteID: 26d49323b66099e42a65582f687a4d8a
+      internalID: 1479375733
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle_1
+      name: Worm_Idle_1
       rect:
         serializedVersion: 2
-        x: 107
-        y: 31
-        width: 53
-        height: 46
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 90
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e596485bbd7608990800000000000000
-      internalID: -7385789195546760866
+      spriteID: 906370efff496ae4b9f1f8f5a55681a9
+      internalID: 440244895
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle_2
+      name: Worm_Idle_2
       rect:
         serializedVersion: 2
-        x: 198
-        y: 31
-        width: 52
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 180
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 184dda4e3d6b3ec20800000000000000
-      internalID: 3234629978573100161
+      spriteID: f56bdc6d3f73f7d419a0800eaf5c6bdf
+      internalID: -515503225
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle_3
+      name: Worm_Idle_3
       rect:
         serializedVersion: 2
-        x: 287
-        y: 31
-        width: 53
-        height: 45
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 270
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 96cb1dafe7d917850800000000000000
-      internalID: 6373048116405451881
+      spriteID: b72b21bb589652c428ec23cee12bd01a
+      internalID: -530028626
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle_4
+      name: Worm_Idle_4
       rect:
         serializedVersion: 2
-        x: 417
-        y: 68
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 360
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3d4b2fc561f8fc460800000000000000
-      internalID: 7264182050183361747
+      spriteID: acb2c9732fcdb20418c158d4c74ec4e1
+      internalID: 1967772481
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle_5
+      name: Worm_Idle_5
       rect:
         serializedVersion: 2
-        x: 418
-        y: 57
-        width: 6
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 450
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bd9b7fa6335a9a8d0800000000000000
-      internalID: -2834552850196481573
+      spriteID: 03187dd66df4d4c4fbee0d4f230d1d21
+      internalID: -13926609
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle_6
+      name: Worm_Idle_6
       rect:
         serializedVersion: 2
-        x: 467
-        y: 31
-        width: 49
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 540
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 40a65a6e4146f7d20800000000000000
-      internalID: 3278449094680734212
+      spriteID: 5cde3472c5f24c542a46881a4f7d913c
+      internalID: 905316139
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle_7
+      name: Worm_Idle_7
       rect:
         serializedVersion: 2
-        x: 557
-        y: 31
-        width: 51
-        height: 47
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 630
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 654108f85d228fe20800000000000000
-      internalID: 3384493420599841878
+      spriteID: 6f0e9f43df57bc84b9c9d36d804d791e
+      internalID: 627307140
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle_8
+      name: Worm_Idle_8
       rect:
         serializedVersion: 2
-        x: 647
-        y: 31
-        width: 51
-        height: 42
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 720
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9506424ec7f55afd0800000000000000
-      internalID: -2331352242086191015
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle_9
-      rect:
-        serializedVersion: 2
-        x: 736
-        y: 31
-        width: 50
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7a497d7772ccda9c0800000000000000
-      internalID: -3914248031228685145
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle_10
-      rect:
-        serializedVersion: 2
-        x: 377
-        y: 31
-        width: 51
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f985a0de5c43df260800000000000000
-      internalID: 7132915409514813599
+      spriteID: d2f642a1444e2c544af7f51b5216b05a
+      internalID: -497293300
       vertices: []
       indices: 
       edges: []
@@ -388,7 +357,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 0905d10c03ca7a24d8a3180125433751
     internalID: 0
     vertices: []
     indices: 
@@ -398,17 +367,15 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Idle_0: 4723107735738678597
-      Idle_1: -7385789195546760866
-      Idle_10: 7132915409514813599
-      Idle_2: 3234629978573100161
-      Idle_3: 6373048116405451881
-      Idle_4: 7264182050183361747
-      Idle_5: -2834552850196481573
-      Idle_6: 3278449094680734212
-      Idle_7: 3384493420599841878
-      Idle_8: -2331352242086191015
-      Idle_9: -3914248031228685145
+      Worm_Idle_0: 1479375733
+      Worm_Idle_1: 440244895
+      Worm_Idle_2: -515503225
+      Worm_Idle_3: -530028626
+      Worm_Idle_4: 1967772481
+      Worm_Idle_5: -13926609
+      Worm_Idle_6: 905316139
+      Worm_Idle_7: 627307140
+      Worm_Idle_8: -497293300
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

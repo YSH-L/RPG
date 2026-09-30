@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1311da9bb66bc1b4c930d442f5090eab, type: 3}
+  m_Name: Boss_Golem
+  m_EditorClassIdentifier: Assembly-CSharp::BossStatsData
+  displayName: Mecha-stone Golem
+  maxHP: 4000
+  contactDamage: 75
+  attackDamage: 110
+  attackRange: 1.8
+  attackCooldown: 2
+  superArmor: 1
+  moveSpeed: 0.7
+  detectRange: 14
+  wanderRange: 4
+  flying: 0
+  hoverHeight: 1.2
+  expReward: 1500
+  goldMin: 1000
+  goldMax: 1400
+  projectileDamage: 90
+  projectileSpeed: 7
+  rangedRange: 11
+  rangedCooldown: 2.2
+  muzzleHeight: 1.4

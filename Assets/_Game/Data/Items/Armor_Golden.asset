@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5ca74d0ad6d17a46a5572a0db5744f1, type: 3}
+  m_Name: Armor_Golden
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: Golden Plate
+  icon: {fileID: -865325130, guid: 0fb5ac7d5e570b248890ec9976fd9abd, type: 3}
+  kind: 1
+  price: 2500
+  requiredLevel: 15
+  attackBonus: 0
+  defenseBonus: 18
+  hpBonus: 180
+  healAmount: 50

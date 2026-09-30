@@ -60,7 +60,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -118,93 +118,84 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Get Hit_0
+      name: Worm_GetHit_0
       rect:
         serializedVersion: 2
-        x: 21
-        y: 31
-        width: 42
-        height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f627d49afa8d75830800000000000000
-      internalID: 4059951838069092975
+      spriteID: 69ae69a7f1f6934478a0695879841656
+      internalID: -1765091947
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Get Hit_1
+      name: Worm_GetHit_1
       rect:
         serializedVersion: 2
-        x: 108
-        y: 31
-        width: 45
-        height: 34
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 90
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ec07060fc3e1e5a30800000000000000
-      internalID: 4205832349090345166
+      spriteID: 0ed6d9838d8ff184aa7832c2146c6af2
+      internalID: -1062245621
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Get Hit_2
+      name: Worm_GetHit_2
       rect:
         serializedVersion: 2
-        x: 145
-        y: 65
-        width: 9
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 180
+        y: 0
+        width: 90
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35555556}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5d5430f6c8e8da4b0800000000000000
-      internalID: -5427525242102528555
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Get Hit_3
-      rect:
-        serializedVersion: 2
-        x: 197
-        y: 31
-        width: 47
-        height: 47
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8483a0b3c940c3c60800000000000000
-      internalID: 7799113723750791240
+      spriteID: b8505c5fa0873d94b9825f5ddb672de2
+      internalID: -784607569
       vertices: []
       indices: 
       edges: []
@@ -213,7 +204,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 981e64a0fae7cc443ac3eee6ee905362
     internalID: 0
     vertices: []
     indices: 
@@ -223,10 +214,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Get Hit_0: 4059951838069092975
-      Get Hit_1: 4205832349090345166
-      Get Hit_2: -5427525242102528555
-      Get Hit_3: 7799113723750791240
+      Worm_GetHit_0: -1765091947
+      Worm_GetHit_1: -1062245621
+      Worm_GetHit_2: -784607569
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
