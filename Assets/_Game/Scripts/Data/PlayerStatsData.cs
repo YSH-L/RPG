@@ -32,10 +32,10 @@ public class PlayerStatsData : ScriptableObject
     [Min(0f)] public float jumpVelocity = 9f;
 
     [Header("공격")]
-    [Tooltip("공격 버튼 사이 최소 간격(초).")]
-    [Min(0f)] public float attackCooldown = 0.4f;
-    [Tooltip("버튼을 누른 뒤 판정이 들어가기까지(초). 칼이 휘둘러지는 프레임에 맞춘다.")]
-    [Min(0f)] public float attackHitDelay = 0.15f;
+    [Tooltip("공격 버튼을 누른 시점부터 다음 공격까지 최소 간격(초). 공격 모션이 이보다 길면 모션이 끝날 때까지 기다린다.")]
+    [Min(0f)] public float attackCooldown = 0.5f;
+    [Tooltip("버튼을 누른 뒤 판정이 들어가기까지(초). 칼이 앞으로 나가는 프레임에 맞춘다. Swordsman Atk1은 20fps의 4번째 프레임 = 0.2초.")]
+    [Min(0f)] public float attackHitDelay = 0.2f;
     [Tooltip("캐릭터 발 기준 공격 판정 상자 중심. x는 바라보는 방향으로 뒤집힌다.")]
     public Vector2 attackBoxOffset = new Vector2(0.65f, 0.5f);
     public Vector2 attackBoxSize = new Vector2(1.4f, 1.1f);

@@ -115,7 +115,7 @@ public class PlayerController : MonoBehaviour
             if (keyboard.digit2Key.wasPressedThisFrame) Stats.UsePotion(1);
         }
 
-        bool attacking = animator.Current == AnimState.Attack && animator.IsBusy;
+        bool attacking = IsAttacking();
 
         if (Time.time >= knockbackUntil)
         {
@@ -143,15 +143,24 @@ public class PlayerController : MonoBehaviour
 
     private void StartAttack()
     {
-        nextAttackTime = Time.time + data.attackCooldown;
+        if (IsAttacking()) return;
+
+        // Hit 모션 중이면 Attack이 거절된다. 모션이 안 나왔으면 판정도 넣지 않는다.
         animator.Play(AnimState.Attack);
+        if (!IsAttacking()) return;
+
+        // 누른 시점부터 잰다. 모션이 쿨타임보다 길면 위의 IsAttacking 검사로 모션이 끝날 때까지 막힌다.
+        nextAttackTime = Time.time + data.attackCooldown;
         StartCoroutine(HitAfterDelay(facing));
     }
+
+    private bool IsAttacking() => animator.Current == AnimState.Attack && animator.IsBusy;
 
     private IEnumerator HitAfterDelay(float direction)
     {
         yield return new WaitForSeconds(data.attackHitDelay);
         if (dying || CurrentArea == null) yield break;
+        if (!IsAttacking()) yield break;   // 판정 전에 맞아서 모션이 끊겼으면 데미지도 없다
 
         Vector2 offset = new Vector2(data.attackBoxOffset.x * direction, data.attackBoxOffset.y);
         Vector2 center = (Vector2)transform.position + offset;

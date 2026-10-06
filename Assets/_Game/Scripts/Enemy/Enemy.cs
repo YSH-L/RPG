@@ -73,7 +73,8 @@ public class Enemy : MonoBehaviour, IDamageable
     private void Start()
     {
         started = true;
-        animator.Play(AnimState.Idle, force: true);
+        // 꺼낸 프레임에 바로 죽었으면 Death를 덮어쓰지 않는다. 덮어쓰면 Death가 끝나지 않아 시체가 남는다.
+        if (!IsDead) animator.Play(AnimState.Idle, force: true);
     }
 
     protected virtual void Update()
