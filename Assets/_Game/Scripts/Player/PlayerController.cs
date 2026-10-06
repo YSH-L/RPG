@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// 조작: ←→ 이동, Space 점프, Z 공격, ↑ 포탈·상인, 1·2 포션.
+/// 조작: ←→ 이동, Space 점프, Z 공격, A 범위베기, S 방어, ↑ 포탈·상인, 1·2 포션.
+/// A·S는 상점에서 스킬북을 사야 쓸 수 있다.
 /// 수치는 전부 <see cref="PlayerStatsData"/>에서 읽는다.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
@@ -37,6 +38,8 @@ public class PlayerController : MonoBehaviour
     private PlayerStatsData data;
     private float facing = 1f;
     private float nextAttackTime;
+    private float nextSlashTime;
+    private float nextGuardTime;
     private float knockbackUntil;
     private int ignoreInputFrame = -1;
     private bool dying;
@@ -105,7 +108,9 @@ public class PlayerController : MonoBehaviour
             move = (keyboard.rightArrowKey.isPressed ? 1f : 0f) - (keyboard.leftArrowKey.isPressed ? 1f : 0f);
 
             if (keyboard.zKey.wasPressedThisFrame && Time.time >= nextAttackTime) StartAttack();
-            if (keyboard.spaceKey.wasPressedThisFrame && grounded && Time.time >= knockbackUntil)
+            if (keyboard.aKey.wasPressedThisFrame) TrySlash();
+            if (keyboard.sKey.wasPressedThisFrame) TryGuard();
+            if (keyboard.spaceKey.wasPressedThisFrame && grounded && Time.time >= knockbackUntil && !Stats.IsGuarding)
             {
                 body.linearVelocity = new Vector2(body.linearVelocity.x, data.jumpVelocity);
                 grounded = false;
@@ -115,23 +120,33 @@ public class PlayerController : MonoBehaviour
             if (keyboard.digit2Key.wasPressedThisFrame) Stats.UsePotion(1);
         }
 
-        bool attacking = IsAttacking();
+        bool acting = IsActing();
+        bool guarding = Stats.IsGuarding;
 
         if (Time.time >= knockbackUntil)
         {
-            // 땅에서 공격하는 동안은 제자리에 선다. 공중 공격은 관성을 유지한다.
-            float speed = attacking && grounded ? 0f : move * data.moveSpeed;
+            // 땅에서 공격하는 동안과 방어하는 동안은 제자리에 선다. 공중 공격은 관성을 유지한다.
+            float speed = (acting && grounded) || guarding ? 0f : move * data.moveSpeed;
             body.linearVelocity = new Vector2(speed, body.linearVelocity.y);
 
-            if (!attacking && move != 0f)
+            if (!acting && move != 0f)
             {
                 facing = Mathf.Sign(move);
                 animator.SetFacing(move);
             }
         }
 
-        if (!grounded) animator.Play(AnimState.Jump);
-        else animator.Play(move != 0f && !attacking ? AnimState.Walk : AnimState.Idle);
+        // Block은 반복 동작이라 방어 시간 동안 여기서 계속 틀어 준다. 끝나면 아래 줄이 Idle로 되돌린다.
+        if (guarding) animator.Play(AnimState.Block);
+        else if (!grounded) animator.Play(AnimState.Jump);
+        else animator.Play(move != 0f && !acting ? AnimState.Walk : AnimState.Idle);
+    }
+
+    /// <summary>스킬을 다시 쓸 수 있을 때까지 남은 시간(초). HUD가 읽는다.</summary>
+    public float SkillCooldownLeft(SkillType skill)
+    {
+        float readyAt = skill == SkillType.Slash ? nextSlashTime : nextGuardTime;
+        return Mathf.Max(0f, readyAt - Time.time);
     }
 
     private bool IsGrounded()
@@ -143,28 +158,58 @@ public class PlayerController : MonoBehaviour
 
     private void StartAttack()
     {
-        if (IsAttacking()) return;
+        if (!TryPlayStrike(AnimState.Attack)) return;
 
-        // Hit 모션 중이면 Attack이 거절된다. 모션이 안 나왔으면 판정도 넣지 않는다.
-        animator.Play(AnimState.Attack);
-        if (!IsAttacking()) return;
-
-        // 누른 시점부터 잰다. 모션이 쿨타임보다 길면 위의 IsAttacking 검사로 모션이 끝날 때까지 막힌다.
+        // 누른 시점부터 잰다. 모션이 쿨타임보다 길면 IsActing 검사로 모션이 끝날 때까지 막힌다.
         nextAttackTime = Time.time + data.attackCooldown;
-        StartCoroutine(HitAfterDelay(facing));
+        StartCoroutine(Strike(AnimState.Attack, data.attackHitDelay, data.attackBoxOffset, data.attackBoxSize,
+            data.maxTargets, 1f, facing));
     }
 
-    private bool IsAttacking() => animator.Current == AnimState.Attack && animator.IsBusy;
-
-    private IEnumerator HitAfterDelay(float direction)
+    private void TrySlash()
     {
-        yield return new WaitForSeconds(data.attackHitDelay);
-        if (dying || CurrentArea == null) yield break;
-        if (!IsAttacking()) yield break;   // 판정 전에 맞아서 모션이 끊겼으면 데미지도 없다
+        if (!Stats.HasSkill(SkillType.Slash) || Time.time < nextSlashTime) return;
+        if (!TryPlayStrike(AnimState.Skill)) return;
 
-        Vector2 offset = new Vector2(data.attackBoxOffset.x * direction, data.attackBoxOffset.y);
+        nextSlashTime = Time.time + data.slashCooldown;
+        StartCoroutine(Strike(AnimState.Skill, data.slashHitDelay, data.slashBoxOffset, data.slashBoxSize,
+            data.slashMaxTargets, data.slashDamageMultiplier, facing));
+    }
+
+    private void TryGuard()
+    {
+        if (!Stats.HasSkill(SkillType.Guard) || Time.time < nextGuardTime || IsActing()) return;
+
+        Stats.Guard(data.guardDuration);
+        nextGuardTime = Time.time + data.guardDuration + data.guardCooldown;
+        animator.Play(AnimState.Block);
+    }
+
+    /// <summary>
+    /// 공격 모션을 튼다. Hit 모션 중이면 거절되는데, 모션이 안 나왔으면 판정도 넣지 않도록 false를 돌려준다.
+    /// </summary>
+    private bool TryPlayStrike(AnimState motion)
+    {
+        if (IsActing()) return false;
+        animator.Play(motion);
+        return IsPlaying(motion);
+    }
+
+    private bool IsPlaying(AnimState motion) => animator.Current == motion && animator.IsBusy;
+
+    /// <summary>공격·범위베기 모션 중이거나 방어 중. 이 동안은 다른 공격·스킬을 시작하지 않는다.</summary>
+    private bool IsActing() => IsPlaying(AnimState.Attack) || IsPlaying(AnimState.Skill) || Stats.IsGuarding;
+
+    private IEnumerator Strike(AnimState motion, float delay, Vector2 boxOffset, Vector2 boxSize,
+        int maxTargets, float damageMultiplier, float direction)
+    {
+        yield return new WaitForSeconds(delay);
+        if (dying || CurrentArea == null) yield break;
+        if (!IsPlaying(motion)) yield break;   // 판정 전에 맞아서 모션이 끊겼으면 데미지도 없다
+
+        Vector2 offset = new Vector2(boxOffset.x * direction, boxOffset.y);
         Vector2 center = (Vector2)transform.position + offset;
-        CurrentArea.OverlapBox(center, data.attackBoxSize, enemyMask, hits);
+        CurrentArea.OverlapBox(center, boxSize, enemyMask, hits);
 
         // 가까운 순서로 maxTargets 마리까지.
         hits.Sort((a, b) =>
@@ -174,11 +219,11 @@ public class PlayerController : MonoBehaviour
         int struck = 0;
         foreach (Collider2D hit in hits)
         {
-            if (struck >= data.maxTargets) break;
+            if (struck >= maxTargets) break;
             if (!hit.TryGetComponent(out IDamageable target)) continue;
             if (hit.TryGetComponent(out Enemy enemy) && enemy.IsDead) continue;
 
-            target.TakeDamage(Stats.RollDamage());
+            target.TakeDamage(Mathf.Max(1, Mathf.RoundToInt(Stats.RollDamage() * damageMultiplier)));
             struck++;
 
             if (hitEffectPool != null)

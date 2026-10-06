@@ -104,7 +104,12 @@ public class ShopWindow : MonoBehaviour
         ItemData item = items[selected];
         switch (customer.Buy(item))
         {
-            case BuyResult.Bought: infoText.text = $"Bought {item.itemName}!"; break;
+            case BuyResult.Bought:
+                infoText.text = item.kind == ItemKind.SkillBook
+                    ? $"Learned {item.skill}!  Press [{ItemData.SkillKey(item.skill)}] to use."
+                    : $"Bought {item.itemName}!";
+                break;
+            case BuyResult.AlreadyLearned: infoText.text = "You already know this skill."; break;
             case BuyResult.NotEnoughGold: infoText.text = "Not enough gold."; break;
             case BuyResult.LevelTooLow: infoText.text = $"Requires Lv.{item.requiredLevel}."; break;
             case BuyResult.AlreadyBetter: infoText.text = "You already have equal or better gear."; break;
@@ -130,6 +135,7 @@ public class ShopWindow : MonoBehaviour
 
             string owned = "";
             if (item == customer.Weapon || item == customer.Armor) owned = "  <color=#7CFC00>[EQUIPPED]</color>";
+            else if (item.kind == ItemKind.SkillBook && customer.HasSkill(item.skill)) owned = "  <color=#7CFC00>[LEARNED]</color>";
             else if (item.kind == ItemKind.Potion) owned = $"  <color=#aaaaaa>x{CountPotion(item)}</color>";
 
             string levelColor = customer.Level >= item.requiredLevel ? "#cccccc" : "#ff6060";

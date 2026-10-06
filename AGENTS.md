@@ -153,7 +153,8 @@ public static void RaiseDamaged(GameObject target, int amount);
 public static void RaiseDied(GameObject target);
 
 // ── SpriteAnimator : 싱글톤 아님. 캐릭터마다 하나씩 붙인다
-public enum AnimState { Idle, Walk, Jump, Attack, Hit, Death }
+public enum AnimState { Idle, Walk, Jump, Attack, Hit, Death, Skill, Block }
+// Skill·Block은 Attack과 같은 우선순위. Block은 반복 동작이라 _Game이 유지 시간 동안 계속 Play한다.
 public AnimState Current { get; }
 public bool IsBusy { get; }              // 반복하지 않는 동작이 재생 중
 public bool IsDeadLocked { get; }        // Death를 끝내고 잠긴 상태

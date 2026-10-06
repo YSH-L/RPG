@@ -44,6 +44,24 @@ public class PlayerStatsData : ScriptableObject
     [Tooltip("데미지 편차. 0.1이면 공격력의 ±10%.")]
     [Range(0f, 0.5f)] public float damageVariance = 0.1f;
 
+    [Header("스킬 — 범위베기 [A] (스킬북으로 배운다)")]
+    [Tooltip("누른 시점부터 다시 쓸 수 있을 때까지(초).")]
+    [Min(0f)] public float slashCooldown = 4f;
+    [Tooltip("버튼을 누른 뒤 판정이 들어가기까지(초). Swordsman Atk2는 16fps의 5번째 프레임 = 0.25초.")]
+    [Min(0f)] public float slashHitDelay = 0.25f;
+    [Tooltip("기본 공격 데미지의 몇 배인지.")]
+    [Min(0f)] public float slashDamageMultiplier = 1.8f;
+    [Tooltip("캐릭터 발 기준 판정 상자 중심. x 0이면 앞뒤로 같이 벤다.")]
+    public Vector2 slashBoxOffset = new Vector2(0f, 0.6f);
+    public Vector2 slashBoxSize = new Vector2(4f, 1.6f);
+    [Min(1)] public int slashMaxTargets = 10;
+
+    [Header("스킬 — 방어 [S] (스킬북으로 배운다)")]
+    [Tooltip("방어 자세를 유지하는 시간(초). 그동안 모든 데미지를 받지 않는다.")]
+    [Min(0f)] public float guardDuration = 1f;
+    [Tooltip("방어가 끝난 뒤 다시 쓸 수 있을 때까지(초).")]
+    [Min(0f)] public float guardCooldown = 5f;
+
     [Header("피격")]
     [Tooltip("맞은 뒤 무적 시간(초).")]
     [Min(0f)] public float invincibleTime = 1f;

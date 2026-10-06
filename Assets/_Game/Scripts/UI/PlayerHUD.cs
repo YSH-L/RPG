@@ -19,6 +19,10 @@ public class PlayerHUD : MonoBehaviour
     [SerializeField] private TMP_Text potionText;
     [SerializeField] private TMP_Text areaText;
 
+    private PlayerController controller;
+    private string potionLine = "";
+    private string skillLine = "";
+
     private void OnEnable()
     {
         stats.OnChanged += Refresh;
@@ -85,7 +89,28 @@ public class PlayerHUD : MonoBehaviour
             if (potions.Length > 0) potions += "    ";
             potions += $"[{slot + 1}] {potion.itemName} x{stats.GetPotionCount(slot)}";
         }
-        potionText.text = potions;
+        potionLine = potions;
+        potionText.text = potionLine + skillLine;
+    }
+
+    /// <summary>스킬 쿨타임은 시간에 따라 바뀌므로 매 프레임 확인하되, 글자가 달라졌을 때만 바꾼다.</summary>
+    private void Update()
+    {
+        if (controller == null) controller = stats.GetComponent<PlayerController>();
+        if (controller == null) return;
+
+        string line = SkillStatus(SkillType.Slash) + SkillStatus(SkillType.Guard);
+        if (line == skillLine) return;
+        skillLine = line;
+        potionText.text = potionLine + skillLine;
+    }
+
+    private string SkillStatus(SkillType skill)
+    {
+        if (!stats.HasSkill(skill)) return "";
+        float left = controller.SkillCooldownLeft(skill);
+        string state = left > 0f ? $"<color=#aaaaaa>{left:0.0}s</color>" : "<color=#7CFC00>READY</color>";
+        return $"    [{ItemData.SkillKey(skill)}] {skill} {state}";
     }
 
     private static void SetFill(RectTransform fill, float ratio)

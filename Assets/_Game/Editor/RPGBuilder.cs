@@ -440,6 +440,7 @@ public static class RPGBuilder
         public BossStatsData worm, golem;
         public ItemData[] equipment;
         public ItemData[] potions;
+        public ItemData[] books;
     }
 
     private static T LoadOrCreate<T>(string path, out bool created) where T : ScriptableObject
@@ -528,6 +529,12 @@ public static class RPGBuilder
             Item("Potion_Red", "Red Potion", ItemKind.Potion, potion(7), 25, 1, heal: 60),
             Item("Potion_Elixir", "Elixir", ItemKind.Potion, potion(27), 150, 5, heal: 0),
         };
+        Sprite book(string name) => NamedSprite($"{IconsDir}/books.png", name);
+        catalog.books = new[]
+        {
+            Item("Book_Guard", "Guard Book", ItemKind.SkillBook, book("books_22"), 150, 3, skill: SkillType.Guard),
+            Item("Book_Slash", "Slash Book", ItemKind.SkillBook, book("books_6"), 300, 5, skill: SkillType.Slash),
+        };
 
         AssetDatabase.SaveAssets();
         return catalog;
@@ -558,7 +565,7 @@ public static class RPGBuilder
     }
 
     private static ItemData Item(string file, string name, ItemKind kind, Sprite icon, int price, int level,
-        int atk = 0, int def = 0, int hp = 0, int heal = 50)
+        int atk = 0, int def = 0, int hp = 0, int heal = 50, SkillType skill = SkillType.Slash)
     {
         var item = LoadOrCreate<ItemData>($"{DataDir}/Items/{file}.asset", out bool created);
         if (created)
@@ -571,6 +578,7 @@ public static class RPGBuilder
             item.defenseBonus = def;
             item.hpBonus = hp;
             item.healAmount = heal;
+            item.skill = skill;
         }
         if (item.icon == null) item.icon = icon;
         EditorUtility.SetDirty(item);
@@ -946,7 +954,7 @@ public static class RPGBuilder
         // 상점 NPC
         ShopWindow shopWindow = BuildShopWindow(canvas.transform);
         MakeMerchant(shop.area, -5f, "Weapon & Armor", catalog.equipment, shopWindow, CharacterSheet($"{ArcherDir}/Archer-Idle-spritesheet.png"), false);
-        MakeMerchant(shop.area, 5f, "Potions", catalog.potions, shopWindow, new[] { NamedSpriteOrFirst($"{Fantasy2}/Mimic/Idle_closed.png") }, true);
+        MakeMerchant(shop.area, 5f, "Potions & Books", catalog.potions.Concat(catalog.books).ToArray(), shopWindow, new[] { NamedSpriteOrFirst($"{Fantasy2}/Mimic/Idle_closed.png") }, true);
 
         // 플레이어
         PlayerController player = BuildPlayer(catalog, follow, hitPool, town.area);
@@ -1164,7 +1172,9 @@ public static class RPGBuilder
             new ClipDef(AnimState.Walk, walk, 12f, true),
             new ClipDef(AnimState.Jump, new[] { walk[Mathf.Min(2, walk.Length - 1)] }, 1f, true),
             new ClipDef(AnimState.Attack, CharacterSheet($"{SwordsmanDir}/Swordsman_Atk1.png"), 20f, false),
-            new ClipDef(AnimState.Hit, CharacterSheet($"{SwordsmanDir}/Swordsman_Hit.png"), 14f, false));
+            new ClipDef(AnimState.Hit, CharacterSheet($"{SwordsmanDir}/Swordsman_Hit.png"), 14f, false),
+            new ClipDef(AnimState.Skill, CharacterSheet($"{SwordsmanDir}/Swordsman_Atk2.png"), 16f, false),
+            new ClipDef(AnimState.Block, CharacterSheet($"{SwordsmanDir}/Swordsman_Block.png"), 8f, true));
 
         var body = go.AddComponent<Rigidbody2D>();
         body.gravityScale = 3f;

@@ -10,7 +10,9 @@ public enum AnimState
     Jump,
     Attack,
     Hit,
-    Death
+    Death,
+    Skill,
+    Block
 }
 
 /// <summary>
@@ -28,8 +30,8 @@ public enum AnimState
 /// 공격 동작이 1프레임마다 끊겨서 <b>영원히 보이지 않는다.</b> 원인 추정이 거의 불가능한 종류라
 /// 여기서 우선순위로 막아둔다.
 /// <list type="bullet">
-/// <item>반복하지 않는 동작(Attack/Hit/Death)이 재생 중이면 <b>더 낮은 우선순위의 요청은 무시된다.</b></item>
-/// <item>우선순위는 Death &gt; Hit &gt; Attack &gt; Jump &gt; Idle·Walk. 그래서 맞으면 공격이 끊긴다.</item>
+/// <item>반복하지 않는 동작(Attack/Skill/Hit/Death)이 재생 중이면 <b>더 낮은 우선순위의 요청은 무시된다.</b></item>
+/// <item>우선순위는 Death &gt; Hit &gt; Attack·Skill·Block &gt; Jump &gt; Idle·Walk. 그래서 맞으면 공격이 끊긴다.</item>
 /// <item>반복 동작(Idle/Walk)끼리는 그냥 바뀐다. 그쪽은 _Game이 매 프레임 결정한다.</item>
 /// <item>Death는 마지막 프레임에서 멈추고 <b>그 뒤로는 <c>force: true</c>가 아닌 요청을 받지 않는다.</b>
 /// 풀에서 다시 꺼내 쓸 때는 <c>Play(AnimState.Idle, force: true)</c>로 되살린다.</item>
@@ -241,7 +243,9 @@ public class SpriteAnimator : MonoBehaviour
         {
             case AnimState.Death: return 4;
             case AnimState.Hit: return 3;
-            case AnimState.Attack: return 2;
+            case AnimState.Attack:
+            case AnimState.Skill:
+            case AnimState.Block: return 2;
             case AnimState.Jump: return 1;
             default: return 0;
         }
