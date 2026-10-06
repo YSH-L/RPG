@@ -79,6 +79,23 @@ public class PlayerStats : MonoBehaviour, IDamageable
 
     private void Awake()
     {
+        ResetToStart();
+    }
+
+    /// <summary>
+    /// 캐릭터를 바꾼다. 수치 에셋을 갈아끼우고 처음 상태로 되돌린다.
+    /// 시작 화면(Ready)에서 <see cref="CharacterSelect"/>가 부른다.
+    /// </summary>
+    public void SetData(PlayerStatsData newData)
+    {
+        if (newData == null) return;
+        data = newData;
+        ResetToStart();
+        OnChanged?.Invoke();
+    }
+
+    private void ResetToStart()
+    {
         potionCounts = new int[potionSlots.Length];
         if (potionCounts.Length > 0) potionCounts[0] = data.startPotions;
         Gold = data.startGold;

@@ -1018,6 +1018,7 @@ GameObject:
   - component: {fileID: 19651517}
   - component: {fileID: 19651516}
   - component: {fileID: 19651515}
+  - component: {fileID: 19651518}
   m_Layer: 0
   m_Name: GameSystems
   m_TagString: Untagged
@@ -1040,6 +1041,7 @@ Transform:
   m_Children:
   - {fileID: 173092575}
   - {fileID: 1392528652}
+  - {fileID: 571446109}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &19651515
@@ -1091,6 +1093,27 @@ MonoBehaviour:
   startArea: {fileID: 294821853}
   player: {fileID: 1185555629}
   cameraFollow: {fileID: 519420033}
+--- !u!114 &19651518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19651513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2491be4a793d5c458d4d64274cba0f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterSelect
+  player: {fileID: 1185555629}
+  profiles:
+  - displayName: Swordsman
+    stats: {fileID: 11400000, guid: d651dd001f086ad489f7fb37a5934984, type: 2}
+    animator: {fileID: 1185555634}
+  - displayName: Archer
+    stats: {fileID: 11400000, guid: fe674e8cc5c410d4db43bd0a18e26bd6, type: 2}
+    animator: {fileID: 1185555638}
+  guideText: {fileID: 27860352}
 --- !u!1 &22795931
 GameObject:
   m_ObjectHideFlags: 0
@@ -1400,6 +1423,8 @@ MonoBehaviour:
   m_text: 'Press SPACE to Start
 
     <size=60%>LEFT/RIGHT move   SPACE jump   Z attack  
+    A/S skill
+
     UP portal/talk   1,2 potion</size>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2405,7 +2430,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -16482,6 +16507,54 @@ MeshRenderer:
   m_SortingOrder: 25
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &571446107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 571446109}
+  - component: {fileID: 571446108}
+  m_Layer: 0
+  m_Name: Pool_PlayerArrow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &571446108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 571446107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f8f3ad20f7cdd64483937b188432074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectPool
+  prefab: {fileID: 7179859370797187695, guid: e2ff4e94a29f0794db14eb25a2a06ce0, type: 3}
+  initialSize: 10
+  expandable: 1
+  container: {fileID: 0}
+--- !u!4 &571446109
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 571446107}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 19651514}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &575337704
 GameObject:
   m_ObjectHideFlags: 0
@@ -25496,7 +25569,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -30575,6 +30648,7 @@ GameObject:
   - component: {fileID: 1185555630}
   - component: {fileID: 1185555629}
   - component: {fileID: 1185555637}
+  - component: {fileID: 1185555638}
   m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
@@ -30607,6 +30681,7 @@ MonoBehaviour:
   interactSize: {x: 1.2, y: 1.6}
   hitEffectPool: {fileID: 173092574}
   slashVisual: {fileID: 1185555637}
+  arrowPool: {fileID: 571446108}
 --- !u!114 &1185555630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30894,6 +30969,89 @@ MonoBehaviour:
   effectDistance: 1.2
   effectHeight: 0.6
   effectScale: 1.6
+  impactScale: 0.9
+--- !u!114 &1185555638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185555628}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849b16a26ad44374b9aeb1368e28e033, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteAnimator
+  clips:
+  - state: 0
+    frames:
+    - {fileID: -5312939911314213099, guid: 79981f533da1c9d4c8d26bf29985dc04, type: 3}
+    - {fileID: 472996454162384696, guid: 79981f533da1c9d4c8d26bf29985dc04, type: 3}
+    - {fileID: 4661985003164118178, guid: 79981f533da1c9d4c8d26bf29985dc04, type: 3}
+    - {fileID: -1518855409785143760, guid: 79981f533da1c9d4c8d26bf29985dc04, type: 3}
+    - {fileID: -8646270377523012463, guid: 79981f533da1c9d4c8d26bf29985dc04, type: 3}
+    - {fileID: 2031580744438770903, guid: 79981f533da1c9d4c8d26bf29985dc04, type: 3}
+    - {fileID: 138820286450631394, guid: 79981f533da1c9d4c8d26bf29985dc04, type: 3}
+    - {fileID: 2133398845970419791, guid: 79981f533da1c9d4c8d26bf29985dc04, type: 3}
+    framesPerSecond: 8
+    loop: 1
+  - state: 1
+    frames:
+    - {fileID: 306223828227191188, guid: eb0ad5dd787e6ab4d82f3b67d0fd9b2b, type: 3}
+    - {fileID: -8487710320863514374, guid: eb0ad5dd787e6ab4d82f3b67d0fd9b2b, type: 3}
+    - {fileID: -7247865642513156370, guid: eb0ad5dd787e6ab4d82f3b67d0fd9b2b, type: 3}
+    - {fileID: 567180273213314197, guid: eb0ad5dd787e6ab4d82f3b67d0fd9b2b, type: 3}
+    - {fileID: -431072190859934991, guid: eb0ad5dd787e6ab4d82f3b67d0fd9b2b, type: 3}
+    - {fileID: -1910717306202601525, guid: eb0ad5dd787e6ab4d82f3b67d0fd9b2b, type: 3}
+    - {fileID: 4637030831327467285, guid: eb0ad5dd787e6ab4d82f3b67d0fd9b2b, type: 3}
+    framesPerSecond: 10
+    loop: 1
+  - state: 2
+    frames:
+    - {fileID: -7247865642513156370, guid: eb0ad5dd787e6ab4d82f3b67d0fd9b2b, type: 3}
+    framesPerSecond: 1
+    loop: 1
+  - state: 3
+    frames:
+    - {fileID: -364819647784776156, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    - {fileID: 984778504800728528, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    - {fileID: 3429758118148970009, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    - {fileID: -6942219535997410062, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    - {fileID: 2831138090742304497, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    framesPerSecond: 14
+    loop: 0
+  - state: 4
+    frames:
+    - {fileID: -6406411524282427980, guid: 89adbcb7d84bcfa44a2f648518744ee8, type: 3}
+    - {fileID: -7715918438772312184, guid: 89adbcb7d84bcfa44a2f648518744ee8, type: 3}
+    - {fileID: -7023269344094711542, guid: 89adbcb7d84bcfa44a2f648518744ee8, type: 3}
+    - {fileID: 2397916061606592502, guid: 89adbcb7d84bcfa44a2f648518744ee8, type: 3}
+    - {fileID: -640850274884538168, guid: 89adbcb7d84bcfa44a2f648518744ee8, type: 3}
+    - {fileID: 5228502604489611183, guid: 89adbcb7d84bcfa44a2f648518744ee8, type: 3}
+    framesPerSecond: 14
+    loop: 0
+  - state: 6
+    frames:
+    - {fileID: -364819647784776156, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    - {fileID: 984778504800728528, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    - {fileID: 3429758118148970009, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    - {fileID: -6942219535997410062, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    - {fileID: 2831138090742304497, guid: 17d5f501469d666498c1f4d54382bd21, type: 3}
+    framesPerSecond: 18
+    loop: 0
+  - state: 7
+    frames:
+    - {fileID: -5222053306287067038, guid: eb7c54db2f6b30f4986cf8da9ae85a39, type: 3}
+    - {fileID: -2681697724412979215, guid: eb7c54db2f6b30f4986cf8da9ae85a39, type: 3}
+    - {fileID: -7962450606743795741, guid: eb7c54db2f6b30f4986cf8da9ae85a39, type: 3}
+    - {fileID: -5038671973099568838, guid: eb7c54db2f6b30f4986cf8da9ae85a39, type: 3}
+    - {fileID: 6333852065345621285, guid: eb7c54db2f6b30f4986cf8da9ae85a39, type: 3}
+    - {fileID: 8708509276350884847, guid: eb7c54db2f6b30f4986cf8da9ae85a39, type: 3}
+    framesPerSecond: 14
+    loop: 1
+  defaultState: 0
+  returnState: 0
+  spriteFacesRight: 1
 --- !u!1 &1193990287
 GameObject:
   m_ObjectHideFlags: 0
@@ -51222,7 +51380,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2

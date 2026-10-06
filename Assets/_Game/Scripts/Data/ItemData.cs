@@ -47,7 +47,9 @@ public class ItemData : ScriptableObject
             case ItemKind.Armor: return hpBonus > 0 ? $"DEF +{defenseBonus}  HP +{hpBonus}" : $"DEF +{defenseBonus}";
             case ItemKind.SkillBook:
                 // 원소 책은 이름에 원소가 들어 있으니 능력만 적는다. 상점 한 줄 폭이 좁다.
-                return element != null ? element.Describe() : $"Learn [{SkillKey(skill)}] {skill}";
+                if (element != null) return element.Describe();
+                // Archer는 같은 책으로 방어 대신 회피를 배운다 (PlayerController.SkillName).
+                return skill == SkillType.Guard ? $"[{SkillKey(skill)}] Guard / Archer: Dodge" : $"Learn [{SkillKey(skill)}] {skill}";
             default: return healAmount > 0 ? $"Heal {healAmount} HP" : "Full heal";
         }
     }

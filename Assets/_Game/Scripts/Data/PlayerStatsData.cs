@@ -61,6 +61,21 @@ public class PlayerStatsData : ScriptableObject
     [Min(0f)] public float guardDuration = 1f;
     [Tooltip("방어가 끝난 뒤 다시 쓸 수 있을 때까지(초).")]
     [Min(0f)] public float guardCooldown = 5f;
+    [Tooltip("0이면 제자리 방어(Swordsman). 0보다 크면 이 속도로 뒤로 물러나는 회피(Archer).")]
+    [Min(0f)] public float guardDashSpeed;
+
+    [Header("원거리 (Archer) — 켜면 Z와 A가 화살을 쏜다")]
+    public bool ranged;
+    [Min(0.1f)] public float arrowSpeed = 14f;
+    [Tooltip("화살이 날아가는 거리. 원소의 범위 배율이 곱해진다.")]
+    [Min(0.1f)] public float arrowRange = 9f;
+    [Tooltip("발 기준 화살 높이. 난사는 이 범위 안에 고르게 나눠 쏜다.")]
+    public float arrowHeightMin = 0.25f;
+    public float arrowHeightMax = 0.95f;
+    [Tooltip("A 난사 때 쏘는 화살 수. 데미지는 한 발마다 slashDamageMultiplier.")]
+    [Min(1)] public int volleyCount = 5;
+    [Tooltip("난사가 위아래로 퍼지는 전체 각도(도).")]
+    [Range(0f, 60f)] public float volleySpread = 10f;
 
     [Header("피격")]
     [Tooltip("맞은 뒤 무적 시간(초).")]

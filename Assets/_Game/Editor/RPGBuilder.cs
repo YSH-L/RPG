@@ -978,6 +978,9 @@ public static partial class RPGBuilder
         BuildHUD(hud, player.GetComponent<PlayerStats>());
         SetTitleTexts(canvas.transform);
 
+        // 두 번째 캐릭터 Archer와 시작 화면의 캐릭터 선택 (RPGBuilder.Archer.cs)
+        BuildArcher(player, systems.transform, canvas.transform);
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
     }
@@ -1338,7 +1341,7 @@ public static partial class RPGBuilder
             if (text.name == "TitleText") text.text = "RPG";
             if (text.name == "GuideText")
             {
-                text.text = "Press SPACE to Start\n<size=60%>LEFT/RIGHT move   SPACE jump   Z attack   UP portal/talk   1,2 potion</size>";
+                text.text = GuideBase;
             }
             EditorUtility.SetDirty(text);
         }

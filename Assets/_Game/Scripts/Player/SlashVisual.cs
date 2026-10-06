@@ -22,8 +22,11 @@ public class SlashVisual : MonoBehaviour
     [SerializeField] private float effectDistance = 1.2f;
     [SerializeField] private float effectHeight = 0.6f;
     [SerializeField] private float effectScale = 1.6f;
+    [Tooltip("Archer 화살이 맞은 자리에 뜨는 이펙트 크기.")]
+    [SerializeField] private float impactScale = 0.9f;
 
     private readonly Dictionary<GameObject, SlashEffect[]> effects = new Dictionary<GameObject, SlashEffect[]>();
+    private int nextImpact;
     private Coroutine spin;
 
     private void Awake()
@@ -55,6 +58,16 @@ public class SlashVisual : MonoBehaviour
         float side = facing >= 0f ? 1f : -1f;
         pair[0].Play(center + Vector3.right * (effectDistance * side), side < 0f, effectScale);
         pair[1].Play(center - Vector3.right * (effectDistance * side), side > 0f, effectScale);
+    }
+
+    /// <summary>화살이 맞은 자리에 원소 이펙트를 하나 띄운다. 만들어 둔 두 개를 번갈아 쓴다.</summary>
+    public void PlayEffectAt(ElementData element, Vector3 position)
+    {
+        if (element == null || element.slashEffect == null) return;
+
+        SlashEffect[] pair = GetEffects(element.slashEffect);
+        nextImpact = (nextImpact + 1) % pair.Length;
+        pair[nextImpact].Play(position, Random.value < 0.5f, impactScale);
     }
 
     /// <summary>원소마다 앞·뒤 두 개를 한 번만 만들어 두고 계속 다시 쓴다.</summary>

@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5db425c360c31942a1e422546f40ef3, type: 3}
+  m_Name: ArcherStats
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStatsData
+  maxLevel: 30
+  expToLevel2: 15
+  expGrowth: 1.25
+  baseMaxHP: 80
+  hpPerLevel: 16
+  baseAttack: 9
+  attackPerLevel: 3
+  baseDefense: 0
+  defensePerLevel: 1
+  startGold: 50
+  startPotions: 3
+  moveSpeed: 4.3
+  jumpVelocity: 10
+  attackCooldown: 0.5
+  attackHitDelay: 0.21
+  attackBoxOffset: {x: 0.65, y: 0.5}
+  attackBoxSize: {x: 1.4, y: 1.1}
+  maxTargets: 3
+  damageVariance: 0.1
+  slashCooldown: 4
+  slashHitDelay: 0.17
+  slashDamageMultiplier: 0.8
+  slashBoxOffset: {x: 0, y: 0.6}
+  slashBoxSize: {x: 4, y: 1.6}
+  slashMaxTargets: 10
+  guardDuration: 0.35
+  guardCooldown: 3
+  guardDashSpeed: 9
+  ranged: 1
+  arrowSpeed: 14
+  arrowRange: 9
+  arrowHeightMin: 0.25
+  arrowHeightMax: 0.95
+  volleyCount: 5
+  volleySpread: 10
+  invincibleTime: 1
+  knockback: {x: 3, y: 4}
