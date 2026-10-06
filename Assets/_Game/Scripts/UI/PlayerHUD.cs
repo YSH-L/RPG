@@ -110,7 +110,13 @@ public class PlayerHUD : MonoBehaviour
         if (!stats.HasSkill(skill)) return "";
         float left = controller.SkillCooldownLeft(skill);
         string state = left > 0f ? $"<color=#aaaaaa>{left:0.0}s</color>" : "<color=#7CFC00>READY</color>";
-        return $"    [{ItemData.SkillKey(skill)}] {skill} {state}";
+        string name = skill.ToString();
+        ElementData element = stats.Element;
+        if (skill == SkillType.Slash && element != null)
+        {
+            name = $"<color=#{ColorUtility.ToHtmlStringRGB(element.color)}>{element.displayName}</color> {name}";
+        }
+        return $"    [{ItemData.SkillKey(skill)}] {name} {state}";
     }
 
     private static void SetFill(RectTransform fill, float ratio)

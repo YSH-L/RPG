@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 869652197249c4849981ef053a58a23b, type: 3}
+  m_Name: Light
+  m_EditorClassIdentifier: Assembly-CSharp::ElementData
+  displayName: Light
+  color: {r: 1, g: 0.95, b: 0.7, a: 1}
+  blade: {fileID: 6894999169920593895, guid: 71654cc4f2684f44cb8758e5de773cd8, type: 3}
+  slashEffect: {fileID: 8200461128718698458, guid: 6c9c2b90bd426d64db16924fe747a78b, type: 3}
+  damageMultiplier: 1.3
+  areaMultiplier: 1
+  lifesteal: 0
+  burnRatio: 0
+  burnDuration: 3
+  burnInterval: 1
+  slowFactor: 1
+  slowDuration: 2
+  rootDuration: 0

@@ -36,6 +36,8 @@ public class ItemData : ScriptableObject
 
     [Header("스킬북")]
     public SkillType skill;
+    [Tooltip("원소 책이면 범위베기를 배우면서 이 원소를 무기에 부여한다. 이미 산 원소 책은 상점에서 다시 고르면 공짜로 바꿔 낀다.")]
+    public ElementData element;
 
     public string Describe()
     {
@@ -43,7 +45,9 @@ public class ItemData : ScriptableObject
         {
             case ItemKind.Weapon: return $"ATK +{attackBonus}";
             case ItemKind.Armor: return hpBonus > 0 ? $"DEF +{defenseBonus}  HP +{hpBonus}" : $"DEF +{defenseBonus}";
-            case ItemKind.SkillBook: return $"Learn [{SkillKey(skill)}] {skill}";
+            case ItemKind.SkillBook:
+                // 원소 책은 이름에 원소가 들어 있으니 능력만 적는다. 상점 한 줄 폭이 좁다.
+                return element != null ? element.Describe() : $"Learn [{SkillKey(skill)}] {skill}";
             default: return healAmount > 0 ? $"Heal {healAmount} HP" : "Full heal";
         }
     }

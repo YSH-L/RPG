@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Book_Guard
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Guard Book
-  icon: {fileID: 4984855960656581297, guid: 71d634376194628489c939f2c9afc6df, type: 3}
+  icon: {fileID: -7379698858742132502, guid: 71d634376194628489c939f2c9afc6df, type: 3}
   kind: 3
   price: 150
   requiredLevel: 3
@@ -22,3 +22,4 @@ MonoBehaviour:
   hpBonus: 0
   healAmount: 50
   skill: 1
+  element: {fileID: 0}

@@ -38,6 +38,19 @@ public class Enemy : MonoBehaviour, IDamageable
     private float bobPhase;
     private readonly List<Collider2D> contacts = new List<Collider2D>();
 
+    // 원소 상태이상 (범위베기로 걸린다)
+    private int burnPerTick;
+    private int burnTicksLeft;
+    private Color burnTint;
+    private float burnInterval;
+    private float nextBurnTick;
+    private float slowFactor = 1f;
+    private float slowUntil;
+    private float rootedUntil;
+
+    private static readonly Color SlowTint = new Color(0.6f, 0.8f, 1f);
+    private static readonly Color RootTint = new Color(0.6f, 1f, 0.6f);
+
     /// <summary>스포너가 풀에서 꺼낸 직후 부른다.</summary>
     public void Init(Area home, EnemySpawner owner)
     {
@@ -56,6 +69,9 @@ public class Enemy : MonoBehaviour, IDamageable
         spriteRenderer.color = Color.white;
         meleePending = false;
         stunnedUntil = 0f;
+        burnTicksLeft = 0;
+        slowUntil = 0f;
+        rootedUntil = 0f;
         nextDecisionTime = 0f;
         nextAttackTime = Time.time + 1f;
         animator.OnClipFinished += HandleClipFinished;
@@ -83,13 +99,15 @@ public class Enemy : MonoBehaviour, IDamageable
         if (GameManager.Instance == null || !GameManager.Instance.IsPlaying) return;
 
         SnapToHeight();
+        UpdateStatus();
+        if (IsDead) return;   // 화상으로 방금 죽었을 수 있다
 
         PlayerController player = PlayerController.Instance;
         bool playerHere = player != null && !player.Stats.IsDead && player.CurrentArea == area;
 
         if (playerHere) DealContactDamage(player);
 
-        if (Time.time < stunnedUntil || animator.IsBusy) return;
+        if (Time.time < stunnedUntil || Time.time < rootedUntil || animator.IsBusy) return;
 
         float dx = playerHere ? area.DeltaX(transform.position.x, player.transform.position.x) : 0f;
         float dy = playerHere ? player.transform.position.y - area.GroundY : 0f;
@@ -129,6 +147,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void Move(float velocity, float faceTowards)
     {
+        if (Time.time < slowUntil) velocity *= slowFactor;
         transform.position += Vector3.right * (velocity * Time.deltaTime);
         animator.SetFacing(faceTowards);
         animator.Play(velocity != 0f ? AnimState.Walk : AnimState.Idle);
@@ -173,6 +192,60 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public void TakeDamage(int amount)
     {
+        ApplyDamage(amount, flinch: true);
+    }
+
+    /// <summary>
+    /// 범위베기에 실린 원소 효과를 건다. 데미지는 이미 <see cref="TakeDamage"/>로 들어간 뒤다.
+    /// </summary>
+    /// <param name="dealt">방금 맞은 데미지. 화상량이 이것에 비례한다.</param>
+    public void ApplyElement(ElementData element, int dealt)
+    {
+        if (IsDead || element == null) return;
+        float now = Time.time;
+
+        if (element.burnRatio > 0f)
+        {
+            burnPerTick = Mathf.Max(1, Mathf.RoundToInt(dealt * element.burnRatio));
+            burnTint = Color.Lerp(Color.white, element.color, 0.6f);   // Fire는 주황, Arcane은 보라
+            burnInterval = element.burnInterval;
+            // 3초 동안 1초마다면 3번. 마지막 틱이 끝나는 순간과 겹쳐 빠지지 않도록 횟수로 센다.
+            burnTicksLeft = Mathf.Max(1, Mathf.RoundToInt(element.burnDuration / element.burnInterval));
+            nextBurnTick = now + burnInterval;
+        }
+        if (element.slowFactor < 1f)
+        {
+            slowFactor = element.slowFactor;
+            slowUntil = now + element.slowDuration;
+        }
+        if (element.rootDuration > 0f)
+        {
+            rootedUntil = now + element.rootDuration;
+            meleePending = false;   // 휘두르던 공격도 끊긴다
+            animator.Play(AnimState.Idle, force: true);
+        }
+    }
+
+    /// <summary>화상 피해를 넣고, 걸린 상태에 맞춰 색을 입힌다.</summary>
+    private void UpdateStatus()
+    {
+        float now = Time.time;
+        if (burnTicksLeft > 0 && now >= nextBurnTick)
+        {
+            burnTicksLeft--;
+            nextBurnTick += burnInterval;
+            ApplyDamage(burnPerTick, flinch: false);   // 지속 피해는 움찔하거나 밀리지 않는다
+            if (IsDead) return;
+        }
+
+        if (now < rootedUntil) spriteRenderer.color = RootTint;
+        else if (burnTicksLeft > 0) spriteRenderer.color = burnTint;
+        else if (now < slowUntil) spriteRenderer.color = SlowTint;
+        else spriteRenderer.color = Color.white;
+    }
+
+    private void ApplyDamage(int amount, bool flinch)
+    {
         if (IsDead || amount <= 0) return;   // 죽은 뒤 또 맞으면 보상이 여러 번 들어간다
 
         CurrentHP = Mathf.Max(0, CurrentHP - amount);
@@ -182,12 +255,13 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             meleePending = false;
             hitbox.enabled = false;
+            spriteRenderer.color = Color.white;
             animator.Play(AnimState.Death);
             CombatEvents.RaiseDied(gameObject);
             return;
         }
 
-        if (!data.superArmor)
+        if (flinch && !data.superArmor)
         {
             meleePending = false;
             stunnedUntil = Time.time + 0.3f;

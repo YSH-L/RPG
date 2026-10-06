@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviour
     [Header("효과")]
     [Tooltip("몬스터를 때렸을 때 나오는 이펙트 풀. 비워 두면 생략.")]
     [SerializeField] private ObjectPool hitEffectPool;
+    [Tooltip("범위베기의 원소 칼·베기 이펙트. 비워 두면 생략.")]
+    [SerializeField] private SlashVisual slashVisual;
 
     public PlayerStats Stats { get; private set; }
     public Area CurrentArea => loopBody != null ? loopBody.Area : null;
@@ -163,17 +165,23 @@ public class PlayerController : MonoBehaviour
         // 누른 시점부터 잰다. 모션이 쿨타임보다 길면 IsActing 검사로 모션이 끝날 때까지 막힌다.
         nextAttackTime = Time.time + data.attackCooldown;
         StartCoroutine(Strike(AnimState.Attack, data.attackHitDelay, data.attackBoxOffset, data.attackBoxSize,
-            data.maxTargets, 1f, facing));
+            data.maxTargets, 1f, facing, null));
     }
 
+    /// <summary>범위베기. 무기에 붙은 원소가 있으면 범위·데미지·상태이상과 연출이 그 원소를 따른다.</summary>
     private void TrySlash()
     {
         if (!Stats.HasSkill(SkillType.Slash) || Time.time < nextSlashTime) return;
         if (!TryPlayStrike(AnimState.Skill)) return;
 
+        ElementData element = Stats.Element;
+        float areaScale = element != null ? element.areaMultiplier : 1f;
+        float damage = data.slashDamageMultiplier * (element != null ? element.damageMultiplier : 1f);
+
         nextSlashTime = Time.time + data.slashCooldown;
-        StartCoroutine(Strike(AnimState.Skill, data.slashHitDelay, data.slashBoxOffset, data.slashBoxSize,
-            data.slashMaxTargets, data.slashDamageMultiplier, facing));
+        if (slashVisual != null) slashVisual.PlayBlade(element, facing);
+        StartCoroutine(Strike(AnimState.Skill, data.slashHitDelay, data.slashBoxOffset, data.slashBoxSize * areaScale,
+            data.slashMaxTargets, damage, facing, element));
     }
 
     private void TryGuard()
@@ -201,11 +209,13 @@ public class PlayerController : MonoBehaviour
     private bool IsActing() => IsPlaying(AnimState.Attack) || IsPlaying(AnimState.Skill) || Stats.IsGuarding;
 
     private IEnumerator Strike(AnimState motion, float delay, Vector2 boxOffset, Vector2 boxSize,
-        int maxTargets, float damageMultiplier, float direction)
+        int maxTargets, float damageMultiplier, float direction, ElementData element)
     {
         yield return new WaitForSeconds(delay);
         if (dying || CurrentArea == null) yield break;
         if (!IsPlaying(motion)) yield break;   // 판정 전에 맞아서 모션이 끊겼으면 데미지도 없다
+
+        if (element != null && slashVisual != null) slashVisual.PlayEffect(element, direction);
 
         Vector2 offset = new Vector2(boxOffset.x * direction, boxOffset.y);
         Vector2 center = (Vector2)transform.position + offset;
@@ -217,13 +227,18 @@ public class PlayerController : MonoBehaviour
                 .CompareTo(Mathf.Abs(CurrentArea.DeltaX(transform.position.x, b.transform.position.x))));
 
         int struck = 0;
+        int totalDealt = 0;
         foreach (Collider2D hit in hits)
         {
             if (struck >= maxTargets) break;
             if (!hit.TryGetComponent(out IDamageable target)) continue;
-            if (hit.TryGetComponent(out Enemy enemy) && enemy.IsDead) continue;
+            bool isEnemy = hit.TryGetComponent(out Enemy enemy);
+            if (isEnemy && enemy.IsDead) continue;
 
-            target.TakeDamage(Mathf.Max(1, Mathf.RoundToInt(Stats.RollDamage() * damageMultiplier)));
+            int dealt = Mathf.Max(1, Mathf.RoundToInt(Stats.RollDamage() * damageMultiplier));
+            target.TakeDamage(dealt);
+            if (isEnemy && element != null) enemy.ApplyElement(element, dealt);
+            totalDealt += dealt;
             struck++;
 
             if (hitEffectPool != null)
@@ -232,6 +247,8 @@ public class PlayerController : MonoBehaviour
                 if (effect != null && effect.TryGetComponent(out OneShotEffect oneShot)) oneShot.Play(hitEffectPool, CurrentArea);
             }
         }
+
+        if (element != null && element.lifesteal > 0f) Stats.Heal(Mathf.RoundToInt(totalDealt * element.lifesteal));
     }
 
     private void TryInteract()

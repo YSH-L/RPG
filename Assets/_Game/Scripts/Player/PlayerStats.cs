@@ -8,7 +8,9 @@ public enum BuyResult
     NotEnoughGold,
     LevelTooLow,
     AlreadyBetter,
-    AlreadyLearned
+    AlreadyLearned,
+    /// <summary>이미 산 원소 책을 다시 골라 그 원소로 바꿔 꼈다. 돈은 들지 않는다.</summary>
+    Switched
 }
 
 /// <summary>
@@ -42,6 +44,8 @@ public class PlayerStats : MonoBehaviour, IDamageable
     /// <summary>방어 스킬 중. 이 동안은 어떤 데미지도 받지 않는다.</summary>
     public bool IsGuarding => Time.time < guardUntil;
     public int PotionSlotCount => potionSlots.Length;
+    /// <summary>지금 무기에 붙은 원소. 원소 책을 사기 전에는 null.</summary>
+    public ElementData Element { get; private set; }
 
     /// <summary>화면에 보이는 값이 하나라도 바뀌었을 때.</summary>
     public event Action OnChanged;
@@ -54,8 +58,18 @@ public class PlayerStats : MonoBehaviour, IDamageable
     private float invincibleUntil;
     private float guardUntil;
     private readonly HashSet<SkillType> learned = new HashSet<SkillType>();
+    private readonly HashSet<ElementData> ownedElements = new HashSet<ElementData>();
 
     public bool HasSkill(SkillType skill) => learned.Contains(skill);
+    public bool OwnsElement(ElementData element) => element != null && ownedElements.Contains(element);
+
+    /// <summary>체력을 채운다. 최대 체력을 넘지 않는다.</summary>
+    public void Heal(int amount)
+    {
+        if (IsDead || amount <= 0 || HP >= MaxHP) return;
+        HP = Mathf.Min(MaxHP, HP + amount);
+        OnChanged?.Invoke();
+    }
 
     /// <summary>지금부터 duration초 동안 모든 데미지를 막는다.</summary>
     public void Guard(float duration)
@@ -148,7 +162,14 @@ public class PlayerStats : MonoBehaviour, IDamageable
         if (Level < item.requiredLevel) return BuyResult.LevelTooLow;
         if (item.kind == ItemKind.Weapon && Weapon != null && Weapon.attackBonus >= item.attackBonus) return BuyResult.AlreadyBetter;
         if (item.kind == ItemKind.Armor && Armor != null && Armor.defenseBonus >= item.defenseBonus) return BuyResult.AlreadyBetter;
-        if (item.kind == ItemKind.SkillBook && learned.Contains(item.skill)) return BuyResult.AlreadyLearned;
+        if (item.kind == ItemKind.SkillBook && item.element != null && ownedElements.Contains(item.element))
+        {
+            if (Element == item.element) return BuyResult.AlreadyLearned;
+            Element = item.element;   // 이미 산 원소 책은 공짜로 바꿔 낀다
+            OnChanged?.Invoke();
+            return BuyResult.Switched;
+        }
+        if (item.kind == ItemKind.SkillBook && item.element == null && learned.Contains(item.skill)) return BuyResult.AlreadyLearned;
         if (Gold < item.price) return BuyResult.NotEnoughGold;
 
         Gold -= item.price;
@@ -168,6 +189,11 @@ public class PlayerStats : MonoBehaviour, IDamageable
                 break;
             case ItemKind.SkillBook:
                 learned.Add(item.skill);
+                if (item.element != null)
+                {
+                    ownedElements.Add(item.element);
+                    Element = item.element;
+                }
                 break;
         }
 

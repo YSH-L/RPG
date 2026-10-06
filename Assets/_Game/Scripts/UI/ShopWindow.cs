@@ -58,7 +58,7 @@ public class ShopWindow : MonoBehaviour
         selected = 0;
         openedFrame = Time.frameCount;
         titleText.text = title;
-        infoText.text = "UP/DOWN select   Z buy   X close";
+        infoText.text = "UP/DOWN select   Z buy / equip   X close";
         root.SetActive(true);
         InputLock.Locked = true;
         customer.OnChanged += Refresh;
@@ -105,11 +105,14 @@ public class ShopWindow : MonoBehaviour
         switch (customer.Buy(item))
         {
             case BuyResult.Bought:
-                infoText.text = item.kind == ItemKind.SkillBook
-                    ? $"Learned {item.skill}!  Press [{ItemData.SkillKey(item.skill)}] to use."
-                    : $"Bought {item.itemName}!";
+                if (item.kind != ItemKind.SkillBook) infoText.text = $"Bought {item.itemName}!";
+                else if (item.element != null) infoText.text = $"{item.element.displayName} {item.skill}!  Press [{ItemData.SkillKey(item.skill)}] to use.";
+                else infoText.text = $"Learned {item.skill}!  Press [{ItemData.SkillKey(item.skill)}] to use.";
                 break;
-            case BuyResult.AlreadyLearned: infoText.text = "You already know this skill."; break;
+            case BuyResult.AlreadyLearned:
+                infoText.text = item.element != null ? $"{item.element.displayName} is already on your weapon." : "You already know this skill.";
+                break;
+            case BuyResult.Switched: infoText.text = $"Weapon element: {item.element.displayName}"; break;
             case BuyResult.NotEnoughGold: infoText.text = "Not enough gold."; break;
             case BuyResult.LevelTooLow: infoText.text = $"Requires Lv.{item.requiredLevel}."; break;
             case BuyResult.AlreadyBetter: infoText.text = "You already have equal or better gear."; break;
@@ -135,6 +138,11 @@ public class ShopWindow : MonoBehaviour
 
             string owned = "";
             if (item == customer.Weapon || item == customer.Armor) owned = "  <color=#7CFC00>[EQUIPPED]</color>";
+            else if (item.kind == ItemKind.SkillBook && item.element != null)
+            {
+                if (item.element == customer.Element) owned = "  <color=#7CFC00>[EQUIPPED]</color>";
+                else if (customer.OwnsElement(item.element)) owned = "  <color=#aaaaaa>[OWNED]</color>";
+            }
             else if (item.kind == ItemKind.SkillBook && customer.HasSkill(item.skill)) owned = "  <color=#7CFC00>[LEARNED]</color>";
             else if (item.kind == ItemKind.Potion) owned = $"  <color=#aaaaaa>x{CountPotion(item)}</color>";
 

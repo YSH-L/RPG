@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5ca74d0ad6d17a46a5572a0db5744f1, type: 3}
-  m_Name: Book_Slash
+  m_Name: Book_Nature
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Slash Book
-  icon: {fileID: 3852567039572876607, guid: 71d634376194628489c939f2c9afc6df, type: 3}
+  itemName: Nature Book
+  icon: {fileID: 8832911332266038494, guid: 71d634376194628489c939f2c9afc6df, type: 3}
   kind: 3
   price: 300
   requiredLevel: 5
@@ -22,3 +22,4 @@ MonoBehaviour:
   hpBonus: 0
   healAmount: 50
   skill: 0
+  element: {fileID: 11400000, guid: a03214d068cd6474cb9bc1755d802df5, type: 2}

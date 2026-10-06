@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 /// 다시 돌려도 된다 — 씬에서 자기가 만든 오브젝트(World, Player, GameSystems, UI 몇 개)를 지우고 다시 만든다.
 /// 데이터 에셋(Data/)은 이미 있으면 숫자를 덮어쓰지 않는다. 밸런스를 고친 것이 날아가지 않게 하기 위해서다.
 /// </summary>
-public static class RPGBuilder
+public static partial class RPGBuilder
 {
     private const string Game = "Assets/_Game";
     private const string DataDir = Game + "/Data";
@@ -530,10 +530,10 @@ public static class RPGBuilder
             Item("Potion_Elixir", "Elixir", ItemKind.Potion, potion(27), 150, 5, heal: 0),
         };
         Sprite book(string name) => NamedSprite($"{IconsDir}/books.png", name);
+        // 범위베기는 원소 책으로 배운다 (RPGBuilder.Elements.cs). 여기에는 방어 책만.
         catalog.books = new[]
         {
-            Item("Book_Guard", "Guard Book", ItemKind.SkillBook, book("books_22"), 150, 3, skill: SkillType.Guard),
-            Item("Book_Slash", "Slash Book", ItemKind.SkillBook, book("books_6"), 300, 5, skill: SkillType.Slash),
+            Item("Book_Guard", "Guard Book", ItemKind.SkillBook, book("books_116"), 150, 3, skill: SkillType.Guard),
         };
 
         AssetDatabase.SaveAssets();
@@ -954,10 +954,13 @@ public static class RPGBuilder
         // 상점 NPC
         ShopWindow shopWindow = BuildShopWindow(canvas.transform);
         MakeMerchant(shop.area, -5f, "Weapon & Armor", catalog.equipment, shopWindow, CharacterSheet($"{ArcherDir}/Archer-Idle-spritesheet.png"), false);
-        MakeMerchant(shop.area, 5f, "Potions & Books", catalog.potions.Concat(catalog.books).ToArray(), shopWindow, new[] { NamedSpriteOrFirst($"{Fantasy2}/Mimic/Idle_closed.png") }, true);
+        MakeMerchant(shop.area, 5f, "Potions", catalog.potions, shopWindow, new[] { NamedSpriteOrFirst($"{Fantasy2}/Mimic/Idle_closed.png") }, true);
 
         // 플레이어
         PlayerController player = BuildPlayer(catalog, follow, hitPool, town.area);
+
+        // 원소 책 상인 + 원소 칼 (책 상인은 Guard Book도 판다)
+        BuildElementSkills(shop.area, shopWindow, player, catalog.books[0], catalog.potions);
 
         // 시스템
         var areaManager = systems.gameObject.AddComponent<AreaManager>();
