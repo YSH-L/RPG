@@ -981,6 +981,15 @@ public static partial class RPGBuilder
         // 두 번째 캐릭터 Archer와 시작 화면의 캐릭터 선택 (RPGBuilder.Archer.cs)
         BuildArcher(player, systems.transform, canvas.transform);
 
+        // 시작 화면: 제목 → 캐릭터 선택 → 조작법 → 밝아지며 시작 (RPGBuilder.Title.cs)
+        BuildTitleIntro(systems.transform, canvas.transform);
+
+        // 소리 (RPGBuilder.Audio.cs)
+        BuildSounds(systems.transform);
+
+        // 승리 연출: 화면이 하얘진 뒤 결과 화면 (RPGBuilder.Victory.cs)
+        BuildVictoryFade(canvas.transform, flow);
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
     }

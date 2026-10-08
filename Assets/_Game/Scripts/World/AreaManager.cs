@@ -54,7 +54,7 @@ public class AreaManager : MonoBehaviour
         cameraFollow.SnapToTarget();
 
         if (area.Spawner != null) area.Spawner.Activate();
-        if (area.Bgm != null && SoundManager.Instance != null) SoundManager.Instance.PlayBGM(area.Bgm);
+        // BGM은 GameAudio가 OnAreaChanged를 받아 튼다. 시작 화면 동안에는 제목 곡을 지켜야 해서 여기서 틀지 않는다.
 
         OnAreaChanged?.Invoke(area);
     }

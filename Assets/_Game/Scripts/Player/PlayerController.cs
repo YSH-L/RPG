@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private SpriteAnimator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private LoopBody loopBody;
+    [SerializeField] private SoundSet sounds;
 
     [Header("판정")]
     [SerializeField] private LayerMask groundMask = 1 << 8;
@@ -143,11 +144,12 @@ public class PlayerController : MonoBehaviour
             if (keyboard.spaceKey.wasPressedThisFrame && grounded && Time.time >= knockbackUntil && !Stats.IsGuarding)
             {
                 body.linearVelocity = new Vector2(body.linearVelocity.x, data.jumpVelocity);
+                if (sounds != null) SoundSet.Play(sounds.jump, 0.6f);
                 grounded = false;
             }
             if (keyboard.upArrowKey.wasPressedThisFrame) TryInteract();
-            if (keyboard.digit1Key.wasPressedThisFrame) Stats.UsePotion(0);
-            if (keyboard.digit2Key.wasPressedThisFrame) Stats.UsePotion(1);
+            if (keyboard.digit1Key.wasPressedThisFrame) DrinkPotion(0);
+            if (keyboard.digit2Key.wasPressedThisFrame) DrinkPotion(1);
         }
 
         bool acting = IsActing();
@@ -186,6 +188,11 @@ public class PlayerController : MonoBehaviour
         if (body.linearVelocity.y > 0.05f) return false;
         Vector2 feet = (Vector2)transform.position + Vector2.down * 0.02f;
         return Physics2D.OverlapBox(feet, groundCheckSize, 0f, groundMask) != null;
+    }
+
+    private void DrinkPotion(int slot)
+    {
+        if (Stats.UsePotion(slot) && sounds != null) SoundSet.Play(sounds.potion);
     }
 
     private void StartAttack()
@@ -230,6 +237,7 @@ public class PlayerController : MonoBehaviour
         if (!Stats.HasSkill(SkillType.Guard) || Time.time < nextGuardTime || IsActing()) return;
 
         Stats.Guard(data.guardDuration);
+        if (sounds != null) SoundSet.Play(data.ranged ? sounds.dodge : sounds.guard);
         nextGuardTime = Time.time + data.guardDuration + data.guardCooldown;
         animator.Play(AnimState.Block);
     }
@@ -257,6 +265,7 @@ public class PlayerController : MonoBehaviour
         if (!IsPlaying(motion)) yield break;   // 판정 전에 맞아서 모션이 끊겼으면 데미지도 없다
 
         if (element != null && slashVisual != null) slashVisual.PlayEffect(element, direction);
+        if (sounds != null) SoundSet.Play(motion == AnimState.Skill ? sounds.skillSlash : sounds.swordSwing);
 
         Vector2 offset = new Vector2(boxOffset.x * direction, boxOffset.y);
         Vector2 center = (Vector2)transform.position + offset;
@@ -302,6 +311,7 @@ public class PlayerController : MonoBehaviour
         if (dying || CurrentArea == null || arrowPool == null) yield break;
         if (!IsPlaying(motion)) yield break;   // 시위를 놓기 전에 맞아서 모션이 끊겼으면 쏘지 않는다
 
+        if (sounds != null) SoundSet.Play(motion == AnimState.Skill ? sounds.skillVolley : sounds.arrowShot);
         float range = data.arrowRange * (element != null ? element.areaMultiplier : 1f);
         Color tint = element != null ? Color.Lerp(Color.white, element.color, 0.7f) : Color.white;
 

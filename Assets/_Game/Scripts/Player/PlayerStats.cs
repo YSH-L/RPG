@@ -43,6 +43,8 @@ public class PlayerStats : MonoBehaviour, IDamageable
     public bool IsInvincible => Time.time < invincibleUntil;
     /// <summary>방어 스킬 중. 이 동안은 어떤 데미지도 받지 않는다.</summary>
     public bool IsGuarding => Time.time < guardUntil;
+    /// <summary>연출 중(승리 화면으로 넘어가는 동안 등)에는 피해를 받지 않는다. 깜빡이지 않는다.</summary>
+    public bool Untouchable { get; set; }
     public int PotionSlotCount => potionSlots.Length;
     /// <summary>지금 무기에 붙은 원소. 원소 책을 사기 전에는 null.</summary>
     public ElementData Element { get; private set; }
@@ -107,7 +109,7 @@ public class PlayerStats : MonoBehaviour, IDamageable
 
     public void TakeDamage(int amount)
     {
-        if (IsDead || amount <= 0 || IsInvincible || IsGuarding) return;
+        if (IsDead || amount <= 0 || IsInvincible || IsGuarding || Untouchable) return;
         if (GameManager.Instance != null && !GameManager.Instance.IsPlaying) return;
 
         int damage = Mathf.Max(1, amount - Defense);

@@ -246,6 +246,8 @@ GameManager.Instance.TriggerGameOver();    // 두 번 불려도 안전하다
   특히 **Space를 점프로 쓰면 Ready에서 시작하는 그 프레임에 같이 점프한다** — `GameManager`의
   실행 순서가 앞이라 같은 프레임에 이미 Playing이 되어 있기 때문이다.
   `OnStateChanged`로 상태가 바뀐 프레임을 기억해 두고 그 프레임의 입력을 무시하면 된다.
+  `GameManager`의 `startOnSpace`를 끄면 Ready에서 Space로 시작하지 않는다. 이 프로젝트는 꺼 두고
+  `_Game`의 `TitleIntro`가 제목 → 캐릭터 선택 → 조작법을 Space로 넘긴 뒤 `StartGame()`을 부른다.
 - **`StartGame()`이 `ScoreManager.ResetScore()`를 대신 불러준다.** `_Game`에서 점수를 따로 0으로 만들 필요가 없다.
 - **가만히 서 있는 플레이어는 `OnTriggerStay2D`를 받지 못한다.** `Rigidbody2D`가 잠들면(`IsSleeping`)
   물리 콜백이 멈춰서, **몬스터 위에 서 있어도 피해를 안 받는 상태**가 된다. 콜라이더도 레이어도 멀쩡한데

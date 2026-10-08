@@ -12,8 +12,8 @@ using Object = UnityEngine.Object;
 /// </summary>
 public static partial class RPGBuilder
 {
-    private const string GuideBase =
-        "Press SPACE to Start\n<size=60%>LEFT/RIGHT move   SPACE jump   Z attack   A/S skill\nUP portal/talk   1,2 potion</size>";
+    /// <summary>캐릭터 선택 페이지의 맨 아래 줄. 조작법은 다음 페이지(RPGBuilder.Title.cs)에 있다.</summary>
+    private const string GuideBase = "Press SPACE to continue";
 
     [MenuItem("RPG/Apply Archer (current scene)")]
     public static void ApplyArcherToOpenScene()

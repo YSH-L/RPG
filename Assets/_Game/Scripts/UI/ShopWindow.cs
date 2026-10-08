@@ -13,6 +13,7 @@ public class ShopWindow : MonoBehaviour
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text goldText;
     [SerializeField] private TMP_Text infoText;
+    [SerializeField] private SoundSet sounds;
 
     [Header("줄 — 같은 순서로 채운다")]
     [SerializeField] private Image[] rowBackgrounds;
@@ -63,6 +64,7 @@ public class ShopWindow : MonoBehaviour
         InputLock.Locked = true;
         customer.OnChanged += Refresh;
         Refresh();
+        if (sounds != null) SoundSet.Play(sounds.shopOpen);
     }
 
     public void Close()
@@ -83,6 +85,7 @@ public class ShopWindow : MonoBehaviour
 
         if (keyboard.xKey.wasPressedThisFrame)
         {
+            if (sounds != null) SoundSet.Play(sounds.shopClose);
             Close();
             return;
         }
@@ -96,13 +99,16 @@ public class ShopWindow : MonoBehaviour
     private void Select(int index)
     {
         selected = (index + items.Length) % items.Length;
+        if (sounds != null) SoundSet.Play(sounds.shopMove, 0.6f);
         Refresh();
     }
 
     private void BuySelected()
     {
         ItemData item = items[selected];
-        switch (customer.Buy(item))
+        BuyResult result = customer.Buy(item);
+        if (sounds != null) SoundSet.Play(result == BuyResult.Bought || result == BuyResult.Switched ? sounds.shopBuy : sounds.shopFail);
+        switch (result)
         {
             case BuyResult.Bought:
                 if (item.kind != ItemKind.SkillBook) infoText.text = $"Bought {item.itemName}!";

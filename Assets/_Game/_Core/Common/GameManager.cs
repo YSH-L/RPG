@@ -42,6 +42,9 @@ public class GameManager : MonoBehaviour
 
     public event Action<GameState> OnStateChanged;
 
+    [Tooltip("켜져 있으면 Ready에서 Space로 바로 시작한다. 시작 화면 연출이 따로 StartGame()을 부른다면 끈다.")]
+    [SerializeField] private bool startOnSpace = true;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -64,7 +67,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 상태 전환 키. Space(시작) / Esc(일시정지·해제) / R(재시작).
+    /// 상태 전환 키. Space(시작, startOnSpace가 켜져 있을 때만) / Esc(일시정지·해제) / R(재시작).
     /// 이 프로젝트는 Input System 패키지 전용 모드라 레거시 Input.GetKey는 실행 시 예외가 난다.
     /// </summary>
     private void Update()
@@ -75,7 +78,7 @@ public class GameManager : MonoBehaviour
         switch (State)
         {
             case GameState.Ready:
-                if (keyboard.spaceKey.wasPressedThisFrame) StartGame();
+                if (startOnSpace && keyboard.spaceKey.wasPressedThisFrame) StartGame();
                 break;
 
             case GameState.Playing:
